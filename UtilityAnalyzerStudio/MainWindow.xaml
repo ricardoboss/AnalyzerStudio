@@ -1,0 +1,97 @@
+﻿<Window x:Class="UtilityAnalyzerStudio.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UtilityAnalyzerStudio"
+        xmlns:models="clr-namespace:UtilityAnalyzerStudio.Models"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance local:MainWindow}"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
+        Title="{Binding CurrentProject.ProjectTitle, StringFormat={}{0} - Utility Analyzer Studio}" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <Menu>
+            <MenuItem Header="Project">
+                <MenuItem Header="Close Project" Click="MenuItemCloseProject_Click" />
+                <MenuItem Header="Save Project" Click="MenuItemSaveProject_Click" Command="" />
+                <MenuItem Header="Save Project At..." Click="MenuItemSaveProjectAt_Click" />
+                <Separator />
+                <MenuItem Header="Change Project Name" Click="MenuItemChangeProjectName_Click" />
+                <Separator />
+                <MenuItem Header="Exit" Click="MenuItemExit_Click" />
+            </MenuItem>
+        </Menu>
+
+        <TabControl Grid.Row="1">
+            <TabItem Header="Specimens">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    
+                    <Button Click="ButtonAddSpecimen_Click" HorizontalAlignment="Left" Margin="5">Add Specimen</Button>
+                    
+                    <ListView Grid.Row="1" ItemsSource="{Binding CurrentProject.Specimens}">
+                        <ListView.View>
+                            <GridView x:Name="SpecimensGridView">
+                                <GridView.Columns>
+                                    <GridViewColumn Header="Name" Width="100" DisplayMemberBinding="{Binding Name}" />
+                                </GridView.Columns>
+                            </GridView>
+                        </ListView.View>
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="{x:Type ListViewItem}">
+                                <EventSetter Event="MouseDoubleClick" Handler="ListViewSpecimensItem_MouseDoubleClick" />
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                    </ListView>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Properties">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <TextBlock Margin="0,0,5,0">Name:</TextBlock>
+                        <TextBox Margin="0,0,5,0" Width="100" x:Name="TextBoxPropertyName" />
+                        <TextBlock Margin="0,0,5,0">Weight:</TextBlock>
+                        <TextBox Margin="0,0,5,0" Width="30" x:Name="TextBoxPropertyWeight" Text="0" />
+                        <Button Click="ButtonAddProperty_Click">Add Property</Button>
+                    </StackPanel>
+
+                    <ListView Grid.Row="1" ItemsSource="{Binding CurrentProject.Properties}">
+                        <ListView.View>
+                            <GridView>
+                                <GridView.Columns>
+                                    <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
+                                    <GridViewColumn Header="Weight" DisplayMemberBinding="{Binding Weight}" />
+                                </GridView.Columns>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Analysis">
+                <ListView Grid.Row="1" ItemsSource="{Binding CurrentProject.Properties}">
+                    <ListView.View>
+                        <GridView>
+                            <GridView.Columns>
+                                <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
+                                <GridViewColumn Header="Weight" DisplayMemberBinding="{Binding Weight}" />
+                            </GridView.Columns>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
