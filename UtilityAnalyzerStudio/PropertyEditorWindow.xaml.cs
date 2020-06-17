@@ -59,6 +59,8 @@ namespace UtilityAnalyzerStudio
                 Enum.GetValues(typeof(NormalizationStrategy)),
                 property.NormalizationStrategy
             );
+
+            TextBoxName.Focus();
         }
 
         private void ButtonSave_Click(object sender, RoutedEventArgs e)

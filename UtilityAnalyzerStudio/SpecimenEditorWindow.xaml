@@ -6,18 +6,23 @@
         mc:Ignorable="d"
         WindowStyle="ToolWindow"
         WindowStartupLocation="CenterOwner"
-        Title="SpecimenBuilderWindow" Height="450" Width="400">
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-        <StackPanel Orientation="Vertical" Margin="10">
-            <TextBlock FontSize="20">Specimen Editor</TextBlock>
-            
+        Title="Specimen Editor" Height="450" Width="400">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <Grid x:Name="GridProperties" Margin="0,5,0,0">
                 <Grid.Resources>
-                    <Style TargetType="{x:Type TextBlock}">
-                        <Setter Property="Margin" Value="10,10,10,0" />
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Margin" Value="0,10,10,0" />
+                        <Setter Property="Padding" Value="3" />
                     </Style>
                     <Style TargetType="{x:Type TextBox}">
                         <Setter Property="Margin" Value="10,10,10,0" />
+                        <Setter Property="Padding" Value="3" />
                         <Setter Property="Validation.ErrorTemplate">
                             <Setter.Value>
                                 <ControlTemplate>
@@ -48,17 +53,17 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="0" Grid.Column="0">Property</TextBlock>
-                <TextBlock Grid.Row="0" Grid.Column="1">Value</TextBlock>
+                <TextBlock Grid.Row="0" Grid.Column="0" FontStyle="Italic">Property</TextBlock>
+                <TextBlock Grid.Row="0" Grid.Column="1" FontStyle="Italic">Value</TextBlock>
 
                 <TextBlock Grid.Row="1" Grid.Column="0">Name</TextBlock>
                 <TextBox Grid.Row="1" Grid.Column="1" x:Name="TextBoxName" />
             </Grid>
+        </ScrollViewer>
 
-            <StackPanel Margin="0,20,0,0" Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Margin="0,0,10,0" Click="ButtonAbort_Click" IsCancel="True">Cancel</Button>
-                <Button IsEnabled="{Binding CanSave}" Click="ButtonSave_Click" IsDefault="True" x:Name="ButtonSave">Save</Button>
-            </StackPanel>
+        <StackPanel Grid.Row="1" Margin="0,10,0,0" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Margin="0,0,10,0" Click="ButtonAbort_Click" IsCancel="True">Cancel</Button>
+            <Button IsEnabled="{Binding CanSave}" Click="ButtonSave_Click" IsDefault="True" x:Name="ButtonSave">Save</Button>
         </StackPanel>
-    </ScrollViewer>
+    </Grid>
 </Window>

@@ -98,6 +98,7 @@ namespace UtilityAnalyzerStudio
                 pair.Value.DataContext = source;
 
             UpdateCanSave();
+            TextBoxName.Focus();
 
             var result = ShowDialog();
             if (!result.HasValue || !result.Value)
