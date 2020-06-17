@@ -1,0 +1,21 @@
+; This is the default for the codeline.
+root = true
+
+[*]
+indent_style = space
+trim_trailing_whitespace = true
+insert_final_newline = true
+end_of_line = crlf
+
+; .NET Code
+[*.{cs,csx,vb,vbx}]
+indent_style = tab
+charset = utf-8
+
+; .NET project files and MSBuild
+[*.{csproj,nuspec,proj,projitems,props,shproj,targets,vbproj,vcxproj,vcxproj.filters,vsixmanifest,vsct}]
+indent_size = 2
+
+; .NET solution files - match defaults for VS
+[*.sln]
+indent_style = tab
