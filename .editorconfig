@@ -7,8 +7,7 @@ trim_trailing_whitespace = true
 insert_final_newline = true
 end_of_line = crlf
 
-; .NET Code
-[*.{cs,csx,vb,vbx}]
+[*.{cs,csx,vb,vbx,.xaml}]
 indent_style = tab
 charset = utf-8
 
