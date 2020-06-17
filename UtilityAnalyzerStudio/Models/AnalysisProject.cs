@@ -4,7 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 
@@ -83,6 +85,9 @@ namespace UtilityAnalyzerStudio.Models
         [JsonProperty]
         public ObservableCollection<Specimen> Specimens { get; } = new ObservableCollection<Specimen>();
 
+        [JsonIgnore]
+        public ObservableCollection<AnalysisDataset> Datasets { get; } = new ObservableCollection<AnalysisDataset>();
+
         private AnalysisProject(string name)
         {
             Name = name;
@@ -142,6 +147,36 @@ namespace UtilityAnalyzerStudio.Models
         public void Save(string path = null)
         {
             SaveAt(this, path ?? Path);
+        }
+
+        public void UpdateAnalysis()
+        {
+            var seenSpecimen = new List<Specimen>();
+
+            foreach (var ds in Datasets)
+            {
+                ds.UpdateValue(Specimens, Properties);
+
+                seenSpecimen.Add(ds.Specimen);
+            }
+
+            foreach (var specimen in Specimens.Where(s => !seenSpecimen.Contains(s)))
+            {
+                var ds = new AnalysisDataset(specimen);
+
+                ds.UpdateValue(Specimens, Properties);
+
+                Datasets.Add(ds);
+            }
+
+            foreach (var specimen in seenSpecimen.Where(s => !Specimens.Contains(s)))
+            {
+                var ds = Datasets.First(d => d.Specimen == specimen);
+                if (ds == null)
+                    continue;
+
+                Datasets.Remove(ds);
+            }
         }
     }
 }

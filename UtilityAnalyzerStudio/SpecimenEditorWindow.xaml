@@ -3,32 +3,39 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:UtilityAnalyzerStudio"
-        xmlns:rule="clr-namespace:UtilityAnalyzerStudio.Rules"
         mc:Ignorable="d"
         WindowStyle="ToolWindow"
         WindowStartupLocation="CenterOwner"
         Title="SpecimenBuilderWindow" Height="450" Width="400">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-        <StackPanel Orientation="Vertical" Margin="5">
+        <StackPanel Orientation="Vertical" Margin="10">
             <TextBlock FontSize="20">Specimen Editor</TextBlock>
             
-            <Grid x:Name="GridProperties" Margin="0,5,0,20">
+            <Grid x:Name="GridProperties" Margin="0,5,0,0">
                 <Grid.Resources>
                     <Style TargetType="{x:Type TextBlock}">
                         <Setter Property="Margin" Value="10,10,10,0" />
                     </Style>
                     <Style TargetType="{x:Type TextBox}">
                         <Setter Property="Margin" Value="10,10,10,0" />
-                        <Setter Property="Text">
+                        <Setter Property="Validation.ErrorTemplate">
                             <Setter.Value>
-                                <Binding RelativeSource="{RelativeSource Self}" Path="Text" UpdateSourceTrigger="LostFocus">
-                                    <Binding.ValidationRules>
-                                        <rule:ParseableDoubleRule />
-                                    </Binding.ValidationRules>
-                                </Binding>
+                                <ControlTemplate>
+                                    <Grid>
+                                        <Border BorderBrush="Red" BorderThickness="1" x:Name="errorBorder" />
+                                        <AdornedElementPlaceholder x:Name="placeholder" />
+                                        <Popup AllowsTransparency="True" HorizontalAlignment="Left" HorizontalOffset="0" VerticalOffset="0" PopupAnimation="Fade" Placement="Bottom" PlacementTarget="{Binding ElementName=errorBorder}" IsOpen="{Binding ElementName=placeholder, Path=AdornedElement.IsFocused, Mode=OneWay}">
+                                            <TextBlock HorizontalAlignment="Center" Background="Red" Foreground="White" FontWeight="Bold" Padding="2" Text="{Binding ElementName=placeholder, Path=AdornedElement.Tag, Mode=OneWay}" />
+                                        </Popup>
+                                    </Grid>
+                                </ControlTemplate>
                             </Setter.Value>
                         </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="Validation.HasError" Value="True">
+                                <Setter Property="Tag" Value="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=(Validation.Errors)[0].ErrorContent}" />
+                            </Trigger>
+                        </Style.Triggers>
                     </Style>
                 </Grid.Resources>
                 
@@ -48,9 +55,9 @@
                 <TextBox Grid.Row="1" Grid.Column="1" x:Name="TextBoxName" />
             </Grid>
 
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Margin="0,0,10,0" Click="ButtonAbort_Click">Abort</Button>
-                <Button Click="ButtonSave_Click">Save</Button>
+            <StackPanel Margin="0,20,0,0" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Margin="0,0,10,0" Click="ButtonAbort_Click" IsCancel="True">Cancel</Button>
+                <Button IsEnabled="{Binding CanSave}" Click="ButtonSave_Click" IsDefault="True" x:Name="ButtonSave">Save</Button>
             </StackPanel>
         </StackPanel>
     </ScrollViewer>

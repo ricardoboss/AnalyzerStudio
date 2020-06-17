@@ -60,13 +60,8 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition />
                     </Grid.RowDefinitions>
-                    <StackPanel Orientation="Horizontal" Margin="5">
-                        <TextBlock Margin="0,0,5,0">Name:</TextBlock>
-                        <TextBox Margin="0,0,5,0" Width="100" x:Name="TextBoxPropertyName" />
-                        <TextBlock Margin="0,0,5,0">Weight:</TextBlock>
-                        <TextBox Margin="0,0,5,0" Width="30" x:Name="TextBoxPropertyWeight" Text="0" />
-                        <Button Click="ButtonAddProperty_Click">Add Property</Button>
-                    </StackPanel>
+
+                    <Button Click="ButtonAddProperty_Click" HorizontalAlignment="Left" Margin="5">Add Property</Button>
 
                     <ListView Grid.Row="1" ItemsSource="{Binding CurrentProject.Properties}">
                         <ListView.View>
@@ -74,19 +69,25 @@
                                 <GridView.Columns>
                                     <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
                                     <GridViewColumn Header="Weight" DisplayMemberBinding="{Binding Weight}" />
+                                    <GridViewColumn Header="Normalization Strategy" DisplayMemberBinding="{Binding NormalizationStrategy}" />
                                 </GridView.Columns>
                             </GridView>
                         </ListView.View>
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="{x:Type ListViewItem}">
+                                <EventSetter Event="MouseDoubleClick" Handler="ListViewPropertiesItem_MouseDoubleClick" />
+                            </Style>
+                        </ListView.ItemContainerStyle>
                     </ListView>
                 </Grid>
             </TabItem>
             <TabItem Header="Analysis">
-                <ListView Grid.Row="1" ItemsSource="{Binding CurrentProject.Properties}">
+                <ListView Grid.Row="1" ItemsSource="{Binding CurrentProject.Datasets}">
                     <ListView.View>
                         <GridView>
                             <GridView.Columns>
-                                <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
-                                <GridViewColumn Header="Weight" DisplayMemberBinding="{Binding Weight}" />
+                                <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Specimen.Name}" />
+                                <GridViewColumn Header="Value" DisplayMemberBinding="{Binding Value}" />
                             </GridView.Columns>
                         </GridView>
                     </ListView.View>

@@ -37,8 +37,8 @@ namespace UtilityAnalyzerStudio
 
                     return;
                 }
-                else
-                    MessageBox.Show($"No project file found at '{path}'.", "Project open failed", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                MessageBox.Show($"No project file found at '{path}'.", "Project open failed", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             MainWindow = ProjectLoadWindow;
@@ -53,8 +53,10 @@ namespace UtilityAnalyzerStudio
             ProjectWindow = new MainWindow();
             ProjectWindow.LoadProject(project);
             ProjectWindow.Closed += (o, e) => {
-                if (MainWindow == null)
-                    ProjectLoadWindow.Close();
+                if (MainWindow != null)
+                    return;
+
+                ProjectLoadWindow.Close();
             };
 
             MainWindow = ProjectWindow;
@@ -85,9 +87,11 @@ namespace UtilityAnalyzerStudio
                 return true;
 
             var isClosed = false;
+            void closedListener(object o, EventArgs e) => isClosed = true;
 
-            ProjectWindow.Closed += (o, e) => isClosed = true;
+            ProjectWindow.Closed += closedListener;
             ProjectWindow.Close();
+            ProjectWindow.Closed -= closedListener;
 
             if (!isClosed)
                 return false;

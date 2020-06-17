@@ -34,18 +34,18 @@ namespace UtilityAnalyzerStudio
         private void ButtonNew_Click(object sender, RoutedEventArgs e)
         {
             string name = "";
-            if (!GetProjectName(this, ref name))
+            if (!TryGetProjectName(this, ref name))
                 return;
 
-            var path = GetNewProjectPath(this, name);
-            if (path == null)
+            var path = "";
+            if (!TryGetNewProjectPath(this, name, ref path))
                 return;
 
             var project = AnalysisProject.NewAt(name, path);
             App.Current.Open(project);
         }
 
-        public static bool GetProjectName(Window owner, ref string name, bool newName = false)
+        public static bool TryGetProjectName(Window owner, ref string name, bool newName = false)
         {
             do
             {
@@ -69,7 +69,7 @@ namespace UtilityAnalyzerStudio
             return true;
         }
 
-        public static string GetNewProjectPath(Window owner, string name)
+        public static bool TryGetNewProjectPath(Window owner, string name, ref string path)
         {
             var sfd = new SaveFileDialog
             {
@@ -81,22 +81,24 @@ namespace UtilityAnalyzerStudio
 
             var result = sfd.ShowDialog(owner);
             if (!result.HasValue || !result.Value)
-                return null;
+                return false;
 
-            return sfd.FileName;
+            path = sfd.FileName;
+
+            return true;
         }
 
         private void ButtonLoad_Click(object sender, RoutedEventArgs e)
         {
-            var path = GetExistingProjectPath(this);
-            if (path == null)
+            var path = "";
+            if (!TryGetExistingProjectPath(this, ref path))
                 return;
 
             var project = AnalysisProject.OpenFrom(path);
             App.Current.Open(project);
         }
 
-        public static string GetExistingProjectPath(Window owner)
+        public static bool TryGetExistingProjectPath(Window owner, ref string path)
         {
             var ofd = new OpenFileDialog
             {
@@ -106,9 +108,11 @@ namespace UtilityAnalyzerStudio
 
             var result = ofd.ShowDialog(owner);
             if (!result.HasValue || !result.Value)
-                return null;
+                return false;
 
-            return ofd.FileName;
+            path = ofd.FileName;
+
+            return true;
         }
     }
 }

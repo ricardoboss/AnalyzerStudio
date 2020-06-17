@@ -10,11 +10,11 @@ namespace UtilityAnalyzerStudio.Rules
     {
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
-            if (value == null)
-                return new ValidationResult(false, "Value is null");
+            if (value == null || value.ToString().Length == 0)
+                return new ValidationResult(false, "Value is empty");
 
             if (!double.TryParse(value.ToString(), out _))
-                return new ValidationResult(false, "Invalid double: " + value.ToString());
+                return new ValidationResult(false, "Invalid number: " + value.ToString());
 
             return ValidationResult.ValidResult;
         }

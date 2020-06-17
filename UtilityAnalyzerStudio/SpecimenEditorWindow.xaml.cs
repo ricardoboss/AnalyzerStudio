@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Dynamic;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -21,10 +23,25 @@ namespace UtilityAnalyzerStudio
     /// <summary>
     /// Interaction logic for SpecimenEditorWindow.xaml
     /// </summary>
-    public partial class SpecimenEditorWindow : Window
+    public partial class SpecimenEditorWindow : Window, INotifyPropertyChanged
     {
         private readonly IEnumerable<Property> Properties;
         private readonly Dictionary<Property, TextBox> propertyInputMap = new Dictionary<Property, TextBox>();
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public bool CanSave
+        {
+            get => canSave;
+            set
+            {
+                canSave = value;
+
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CanSave)));
+            }
+        }
+        private bool canSave = false;
+
 
         public SpecimenEditorWindow(IEnumerable<Property> properties)
         {
@@ -66,6 +83,9 @@ namespace UtilityAnalyzerStudio
 
                 propertyInputMap[prop] = input;
 
+                input.LostFocus += Input_LostFocus;
+                input.TextChanged += Input_TextChanged;
+
                 row++;
             }
         }
@@ -75,10 +95,9 @@ namespace UtilityAnalyzerStudio
             TextBoxName.Text = source.Name;
 
             foreach (var pair in propertyInputMap)
-            {
-                //var value = Dynamic.InvokeGet(source, pair.Key.Name);
                 pair.Value.DataContext = source;
-            }
+
+            UpdateCanSave();
 
             var result = ShowDialog();
             if (!result.HasValue || !result.Value)
@@ -104,6 +123,12 @@ namespace UtilityAnalyzerStudio
 
         private void ButtonSave_Click(object sender, RoutedEventArgs e)
         {
+            ButtonSave.Focus();
+
+            UpdateCanSave(true);
+            if (!CanSave)
+                return;
+
             DialogResult = true;
 
             Close();
@@ -114,6 +139,24 @@ namespace UtilityAnalyzerStudio
             DialogResult = false;
 
             Close();
+        }
+
+        private void Input_LostFocus(object sender, RoutedEventArgs e)
+        {
+            UpdateCanSave();
+        }
+
+        private void Input_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            UpdateCanSave();
+        }
+
+        private void UpdateCanSave(bool validateText = false)
+        {
+            if (validateText)
+                CanSave = propertyInputMap.Values.All(tb => double.TryParse(tb.Text, out _));
+            else
+                CanSave = !propertyInputMap.Values.Any(tb => Validation.GetHasError(tb));
         }
     }
 }

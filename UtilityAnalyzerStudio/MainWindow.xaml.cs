@@ -83,6 +83,8 @@ namespace UtilityAnalyzerStudio
 
             UpdateSpecimensColumns(new List<Property>(), project.Properties);
 
+            project.UpdateAnalysis();
+
             CurrentProject = project;
         }
 
@@ -97,7 +99,8 @@ namespace UtilityAnalyzerStudio
                     property.PropertyChanged += Property_PropertyChanged;
 
             UpdateSpecimensColumns((e.OldItems ?? new List<Property>()).Cast<Property>(), (e.NewItems ?? new List<Property>()).Cast<Property>());
-            UpdateAnalysis();
+
+            CurrentProject.UpdateAnalysis();
         }
 
         private void Specimens_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -110,17 +113,17 @@ namespace UtilityAnalyzerStudio
                 foreach (Specimen specimen in e.NewItems)
                     specimen.PropertyChanged += Specimen_PropertyChanged;
 
-            UpdateAnalysis();
+            CurrentProject.UpdateAnalysis();
         }
 
         private void Property_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            UpdateAnalysis();
+            CurrentProject.UpdateAnalysis();
         }
 
         private void Specimen_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            UpdateAnalysis();
+            CurrentProject.UpdateAnalysis();
         }
 
         public void UpdateSpecimensColumns(IEnumerable<Property> removed, IEnumerable<Property> added)
@@ -164,31 +167,24 @@ namespace UtilityAnalyzerStudio
             }
         }
 
-        public void UpdateAnalysis()
-        {
-
-        }
-
         private void ButtonAddProperty_Click(object sender, RoutedEventArgs e)
         {
-            var property = new Property
-            {
-                Name = TextBoxPropertyName.Text,
-                Weight = int.Parse(TextBoxPropertyWeight.Text)
-            };
+            var property = new Property();
+            if (!Edit(property))
+                return;
 
             CurrentProject.Properties.Add(property);
         }
 
         private void ButtonAddSpecimen_Click(object sender, RoutedEventArgs e)
         {
-            var specimenBuilder = new SpecimenEditorWindow(CurrentProject.Properties)
+            var editor = new SpecimenEditorWindow(CurrentProject.Properties)
             {
                 Owner = this
             };
             var specimen = new Specimen();
 
-            var saved = specimenBuilder.Edit(ref specimen);
+            var saved = editor.Edit(ref specimen);
             if (saved)
                 CurrentProject.Specimens.Add(specimen);
         }
@@ -200,7 +196,10 @@ namespace UtilityAnalyzerStudio
 
         private void MenuItemSaveProjectAt_Click(object sender, RoutedEventArgs e)
         {
-            var path = ProjectLoadWindow.GetNewProjectPath(this, CurrentProject.Name);
+            var path = "";
+            if (!ProjectLoadWindow.TryGetNewProjectPath(this, CurrentProject.Name, ref path))
+                return;
+
             CurrentProject.Save(path);
 
             MessageBox.Show("Successfully saved project at " + path, "Project Saved");
@@ -219,7 +218,7 @@ namespace UtilityAnalyzerStudio
         private void MenuItemChangeProjectName_Click(object sender, RoutedEventArgs e)
         {
             var name = "";
-            if (ProjectLoadWindow.GetProjectName(this, ref name, true))
+            if (ProjectLoadWindow.TryGetProjectName(this, ref name, true))
                 CurrentProject.Name = name;
         }
 
@@ -233,6 +232,30 @@ namespace UtilityAnalyzerStudio
                 Owner = this
             };
             editorWindow.Edit(ref original);
+        }
+
+        private void ListViewPropertiesItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (!(sender is ListViewItem lvi) || !(lvi.Content is Property original))
+                return;
+
+            var clone = original.Clone();
+            if (!Edit(clone))
+                return;
+
+            lvi.Content = clone;
+        }
+
+        private bool Edit(Property property)
+        {
+            var editorWindow = new PropertyEditorWindow(property)
+            {
+                Owner = this
+            };
+
+            var result = editorWindow.ShowDialog();
+
+            return result.HasValue && result.Value;
         }
     }
 }
