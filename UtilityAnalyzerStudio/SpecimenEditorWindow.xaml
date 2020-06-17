@@ -3,7 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:models="clr-namespace:UtilityAnalyzerStudio.Models"
         mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance models:Specimen}"
         WindowStyle="ToolWindow"
         WindowStartupLocation="CenterOwner"
         Title="Specimen Editor" Height="450" Width="400">
@@ -16,8 +18,12 @@
         <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <Grid x:Name="GridProperties" Margin="0,5,0,0">
                 <Grid.Resources>
-                    <Style TargetType="TextBlock">
+                    <Style TargetType="{x:Type TextBlock}">
                         <Setter Property="Margin" Value="0,10,10,0" />
+                        <Setter Property="Padding" Value="3" />
+                    </Style>
+                    <Style TargetType="{x:Type CheckBox}">
+                        <Setter Property="Margin" Value="10,10,10,0" />
                         <Setter Property="Padding" Value="3" />
                     </Style>
                     <Style TargetType="{x:Type TextBox}">
@@ -57,7 +63,7 @@
                 <TextBlock Grid.Row="0" Grid.Column="1" FontStyle="Italic">Value</TextBlock>
 
                 <TextBlock Grid.Row="1" Grid.Column="0">Name</TextBlock>
-                <TextBox Grid.Row="1" Grid.Column="1" x:Name="TextBoxName" />
+                <TextBox Grid.Row="1" Grid.Column="1" x:Name="TextBoxName" Text="{Binding Name}" TextChanged="Input_TextChanged" LostFocus="Input_LostFocus" />
             </Grid>
         </ScrollViewer>
 

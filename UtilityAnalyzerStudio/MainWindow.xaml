@@ -69,6 +69,7 @@
                                 <GridView.Columns>
                                     <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
                                     <GridViewColumn Header="Weight" DisplayMemberBinding="{Binding Weight}" />
+                                    <GridViewColumn Header="Type" DisplayMemberBinding="{Binding Type}" />
                                     <GridViewColumn Header="Normalization Strategy" DisplayMemberBinding="{Binding NormalizationStrategy}" />
                                 </GridView.Columns>
                             </GridView>
@@ -87,7 +88,7 @@
                         <GridView>
                             <GridView.Columns>
                                 <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Specimen.Name}" />
-                                <GridViewColumn Header="Value" DisplayMemberBinding="{Binding Value}" />
+                                <GridViewColumn Header="Value" DisplayMemberBinding="{Binding Value, StringFormat={}{0:P4}}" />
                             </GridView.Columns>
                         </GridView>
                     </ListView.View>

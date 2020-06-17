@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
+﻿using System.Globalization;
 using System.Windows.Controls;
 
 namespace UtilityAnalyzerStudio.Rules
@@ -13,7 +10,7 @@ namespace UtilityAnalyzerStudio.Rules
             if (value == null || value.ToString().Length == 0)
                 return new ValidationResult(false, "Value is empty");
 
-            if (!double.TryParse(value.ToString(), out _))
+            if (!double.TryParse(value.ToString(), NumberStyles.Any, CultureInfo.CurrentCulture, out _))
                 return new ValidationResult(false, "Invalid number: " + value.ToString());
 
             return ValidationResult.ValidResult;

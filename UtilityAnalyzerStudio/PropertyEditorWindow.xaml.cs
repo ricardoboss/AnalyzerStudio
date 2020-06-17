@@ -2,16 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Windows;
-using System.Linq;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 using UtilityAnalyzerStudio.Models;
 
@@ -38,6 +30,13 @@ namespace UtilityAnalyzerStudio
         {
             get => property;
             set => SetProperty(ref property, value);
+        }
+
+        private int selectedTypeIndex;
+        public int SelectedTypeIndex
+        {
+            get => selectedTypeIndex;
+            set => SetProperty(ref selectedTypeIndex, value);
         }
 
         private int selectedStrategyIndex;
@@ -77,9 +76,14 @@ namespace UtilityAnalyzerStudio
             Close();
         }
 
+        private void ComboBoxType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Property.Type = (PropertyType)Enum.GetValues(typeof(PropertyType)).GetValue(SelectedTypeIndex);
+        }
+
         private void ComboBoxNormalizationStrategy_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Property.NormalizationStrategy = (NormalizationStrategy) Enum.GetValues(typeof(NormalizationStrategy)).GetValue(SelectedStrategyIndex);
+            Property.NormalizationStrategy = (NormalizationStrategy)Enum.GetValues(typeof(NormalizationStrategy)).GetValue(SelectedStrategyIndex);
         }
     }
 }

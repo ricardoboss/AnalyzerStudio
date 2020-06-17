@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace UtilityAnalyzerStudio.Models
 {
@@ -14,7 +13,8 @@ namespace UtilityAnalyzerStudio.Models
             set => SetProperty(ref specimen, value);
         }
 
-        public double Value {
+        public double Value
+        {
             get => value;
             private set => SetProperty(ref this.value, value);
         }
@@ -32,12 +32,17 @@ namespace UtilityAnalyzerStudio.Models
 
             foreach (var p in properties)
             {
+                if (p.Type.Equals(PropertyType.Text))
+                    continue; // text properties are not evaluated
+
                 var allValues = specimens
                     .Where(s => s.Properties.ContainsKey(p.Name))
-                    .Select(s => s.Properties[p.Name]);
+                    .Select(s => Convert.ToDouble(s.Properties[p.Name]));
 
-                if (!specimen.Properties.TryGetValue(p.Name, out var value))
+                if (!specimen.Properties.TryGetValue(p.Name, out var rawValue))
                     continue;
+
+                var value = Convert.ToDouble(rawValue);
 
                 p.Normalize(ref value, allValues);
 

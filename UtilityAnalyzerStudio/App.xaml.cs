@@ -1,12 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 using System.Windows;
 
 using UtilityAnalyzerStudio.Models;
@@ -18,7 +11,7 @@ namespace UtilityAnalyzerStudio
     /// </summary>
     public partial class App : Application
     {
-        public static new App Current => (App) Application.Current;
+        public static new App Current => (App)Application.Current;
 
         private MainWindow ProjectWindow;
         private ProjectLoadWindow ProjectLoadWindow { get; } = new ProjectLoadWindow();
@@ -52,7 +45,8 @@ namespace UtilityAnalyzerStudio
 
             ProjectWindow = new MainWindow();
             ProjectWindow.LoadProject(project);
-            ProjectWindow.Closed += (o, e) => {
+            ProjectWindow.Closed += (o, e) =>
+            {
                 if (MainWindow != null)
                     return;
 

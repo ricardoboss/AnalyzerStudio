@@ -15,7 +15,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         
-        <TextBlock Grid.Row="0" Margin="0,5,0,0" FontSize="25" HorizontalAlignment="Center">Utility Analyzer Studio</TextBlock>
+        <TextBlock Grid.Row="0" Margin="0,5,0,0" FontSize="25" FontWeight="Bold" HorizontalAlignment="Center">Utility Analyzer Studio</TextBlock>
 
         <StackPanel Grid.Row="1" VerticalAlignment="Center">
             <Button Padding="10" Click="ButtonNew_Click" Width="150">New Project</Button>

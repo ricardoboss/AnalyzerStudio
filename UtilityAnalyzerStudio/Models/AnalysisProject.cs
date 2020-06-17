@@ -1,13 +1,11 @@
 ﻿using Newtonsoft.Json;
 
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
 
 namespace UtilityAnalyzerStudio.Models
@@ -72,7 +70,8 @@ namespace UtilityAnalyzerStudio.Models
         public string Name
         {
             get => name;
-            set {
+            set
+            {
                 SetProperty(ref name, value, nameof(Name), nameof(ProjectTitle));
                 IsDirty = true;
             }
@@ -117,8 +116,8 @@ namespace UtilityAnalyzerStudio.Models
                     p.PropertyChanged += Property_PropertyChanged;
 
             if (e.OldItems != null)
-                foreach (Property p in e.NewItems)
-                    p.PropertyChanged += Property_PropertyChanged;
+                foreach (Property p in e.OldItems)
+                    p.PropertyChanged -= Property_PropertyChanged;
         }
 
         private void Specimens_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)

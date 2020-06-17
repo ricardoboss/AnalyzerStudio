@@ -1,26 +1,10 @@
-﻿using Newtonsoft.Json;
-
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Dynamic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 using UtilityAnalyzerStudio.Models;
 
@@ -33,7 +17,8 @@ namespace UtilityAnalyzerStudio
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public AnalysisProject CurrentProject {
+        public AnalysisProject CurrentProject
+        {
             get => currentProject;
             private set
             {
@@ -170,7 +155,7 @@ namespace UtilityAnalyzerStudio
         private void ButtonAddProperty_Click(object sender, RoutedEventArgs e)
         {
             var property = new Property();
-            if (!Edit(property))
+            if (!Edit(ref property))
                 return;
 
             CurrentProject.Properties.Add(property);
@@ -182,7 +167,7 @@ namespace UtilityAnalyzerStudio
             {
                 Owner = this
             };
-            var specimen = new Specimen();
+            var specimen = new Specimen(CurrentProject.Properties);
 
             var saved = editor.Edit(ref specimen);
             if (saved)
@@ -231,7 +216,12 @@ namespace UtilityAnalyzerStudio
             {
                 Owner = this
             };
-            editorWindow.Edit(ref original);
+
+            var clone = original.Clone();
+            if (!editorWindow.Edit(ref clone))
+                return;
+
+            original.CopyValues(clone);
         }
 
         private void ListViewPropertiesItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -240,13 +230,13 @@ namespace UtilityAnalyzerStudio
                 return;
 
             var clone = original.Clone();
-            if (!Edit(clone))
+            if (!Edit(ref clone))
                 return;
 
-            lvi.Content = clone;
+            original.CopyValuesFrom(clone);
         }
 
-        private bool Edit(Property property)
+        private bool Edit(ref Property property)
         {
             var editorWindow = new PropertyEditorWindow(property)
             {

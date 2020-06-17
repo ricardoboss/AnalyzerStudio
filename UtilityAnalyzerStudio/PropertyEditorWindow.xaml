@@ -9,7 +9,7 @@
         d:DataContext="{d:DesignInstance local:PropertyEditorWindow}"
         WindowStyle="ToolWindow"
         WindowStartupLocation="CenterOwner"
-        Title="Property Editor" Height="210" Width="400">
+        Title="Property Editor" Height="250" Width="400">
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition />
@@ -36,12 +36,18 @@
                             <x:Type Type="{x:Type models:NormalizationStrategy}" />
                         </ObjectDataProvider.MethodParameters>
                     </ObjectDataProvider>
+                    <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type models:PropertyType}" x:Key="PropertyTypeDataProvider">
+                        <ObjectDataProvider.MethodParameters>
+                            <x:Type Type="{x:Type models:PropertyType}" />
+                        </ObjectDataProvider.MethodParameters>
+                    </ObjectDataProvider>
                 </Grid.Resources>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
@@ -53,8 +59,17 @@
                 <TextBlock Grid.Row="1" Grid.Column="0">Weight</TextBlock>
                 <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Property.Weight}" />
 
-                <TextBlock Grid.Row="2" Grid.Column="0">Normalization Strategy</TextBlock>
-                <ComboBox Grid.Row="2" Grid.Column="1" SelectionChanged="ComboBoxNormalizationStrategy_SelectionChanged" SelectedIndex="{Binding SelectedStrategyIndex}" ItemsSource="{Binding Source={StaticResource NormalizationStrategyDataProvider}}">
+                <TextBlock Grid.Row="2" Grid.Column="0">Type</TextBlock>
+                <ComboBox Grid.Row="2" Grid.Column="1" SelectionChanged="ComboBoxType_SelectionChanged" SelectedIndex="{Binding SelectedTypeIndex}" ItemsSource="{Binding Source={StaticResource PropertyTypeDataProvider}}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                
+                <TextBlock Grid.Row="3" Grid.Column="0">Normalization Strategy</TextBlock>
+                <ComboBox Grid.Row="3" Grid.Column="1" SelectionChanged="ComboBoxNormalizationStrategy_SelectionChanged" SelectedIndex="{Binding SelectedStrategyIndex}" ItemsSource="{Binding Source={StaticResource NormalizationStrategyDataProvider}}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding}" />
