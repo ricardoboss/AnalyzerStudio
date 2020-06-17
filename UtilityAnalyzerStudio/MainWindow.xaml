@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:UtilityAnalyzerStudio"
-        xmlns:models="clr-namespace:UtilityAnalyzerStudio.Models"
+        xmlns:ext="clr-namespace:UtilityAnalyzerStudio.Extensions"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance local:MainWindow}"
         WindowStartupLocation="CenterScreen"
@@ -35,14 +35,18 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition />
                     </Grid.RowDefinitions>
-                    
-                    <Button Click="ButtonAddSpecimen_Click" HorizontalAlignment="Left" Margin="5">Add Specimen</Button>
-                    
-                    <ListView Grid.Row="1" ItemsSource="{Binding CurrentProject.Specimens}">
+
+                    <StackPanel Grid.Row="0">
+                        <Button Click="ButtonAddSpecimen_Click" HorizontalAlignment="Left" Margin="5">Add Specimen</Button>
+                    </StackPanel>
+
+                    <ListView Grid.Row="1"
+                              ItemsSource="{Binding CurrentProject.Specimens}"
+                              ext:GridViewSort.AutoSort="True">
                         <ListView.View>
                             <GridView x:Name="SpecimensGridView">
                                 <GridView.Columns>
-                                    <GridViewColumn Header="Name" Width="100" DisplayMemberBinding="{Binding Name}" />
+                                    <GridViewColumn Header="Name" Width="100" DisplayMemberBinding="{Binding Name}" ext:GridViewSort.PropertyName="Name" />
                                 </GridView.Columns>
                             </GridView>
                         </ListView.View>
@@ -61,16 +65,20 @@
                         <RowDefinition />
                     </Grid.RowDefinitions>
 
-                    <Button Click="ButtonAddProperty_Click" HorizontalAlignment="Left" Margin="5">Add Property</Button>
+                    <StackPanel Grid.Row="0">
+                        <Button Click="ButtonAddProperty_Click" HorizontalAlignment="Left" Margin="5">Add Property</Button>
+                    </StackPanel>
 
-                    <ListView Grid.Row="1" ItemsSource="{Binding CurrentProject.Properties}">
+                    <ListView Grid.Row="1"
+                              ItemsSource="{Binding CurrentProject.Properties}"
+                              ext:GridViewSort.AutoSort="True">
                         <ListView.View>
                             <GridView>
                                 <GridView.Columns>
-                                    <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
-                                    <GridViewColumn Header="Weight" DisplayMemberBinding="{Binding Weight}" />
-                                    <GridViewColumn Header="Type" DisplayMemberBinding="{Binding Type}" />
-                                    <GridViewColumn Header="Normalization Strategy" DisplayMemberBinding="{Binding NormalizationStrategy}" />
+                                    <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" ext:GridViewSort.PropertyName="Name" />
+                                    <GridViewColumn Header="Weight" DisplayMemberBinding="{Binding Weight}" ext:GridViewSort.PropertyName="Weight" />
+                                    <GridViewColumn Header="Type" DisplayMemberBinding="{Binding Type}" ext:GridViewSort.PropertyName="Type" />
+                                    <GridViewColumn Header="Normalization Strategy" DisplayMemberBinding="{Binding NormalizationStrategy}" ext:GridViewSort.PropertyName="NormalizationStrategy" />
                                 </GridView.Columns>
                             </GridView>
                         </ListView.View>
@@ -83,12 +91,15 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Analysis">
-                <ListView Grid.Row="1" ItemsSource="{Binding CurrentProject.Datasets}">
+                <ListView Grid.Row="1"
+                          ItemsSource="{Binding CurrentProject.Datasets}"
+                          IsSynchronizedWithCurrentItem="True"
+                          ext:GridViewSort.AutoSort="True">
                     <ListView.View>
                         <GridView>
                             <GridView.Columns>
-                                <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Specimen.Name}" />
-                                <GridViewColumn Header="Value" DisplayMemberBinding="{Binding Value, StringFormat={}{0:P4}}" />
+                                <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Specimen.Name}" ext:GridViewSort.PropertyName="Specimen.Name" />
+                                <GridViewColumn Header="Value" DisplayMemberBinding="{Binding Value, StringFormat={}{0:P4}}" ext:GridViewSort.PropertyName="Value" />
                             </GridView.Columns>
                         </GridView>
                     </ListView.View>
