@@ -1,5 +1,7 @@
+using System.CodeDom;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.DirectoryServices.ActiveDirectory;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,6 +18,11 @@ namespace UtilityAnalyzerStudio
 	/// </summary>
 	public partial class MainWindow : Window, INotifyPropertyChanged
 	{
+		public static RoutedCommand AppExitCommand = new RoutedCommand();
+		public static RoutedCommand ProjectChangeNameCommand = new RoutedCommand();
+		public static RoutedCommand SpecimenCreateCommand = new RoutedCommand();
+		public static RoutedCommand PropertyCreateCommand = new RoutedCommand();
+
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		private AnalysisProject currentProject;
@@ -29,6 +36,54 @@ namespace UtilityAnalyzerStudio
 			}
 		}
 
+		private Specimen selectedSpecimen;
+		public Specimen SelectedSpecimen
+		{
+			get => selectedSpecimen;
+			set
+			{
+				selectedSpecimen = value;
+
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedSpecimen)));
+			}
+		}
+
+		private Property selectedProperty;
+		public Property SelectedProperty
+		{
+			get => selectedProperty;
+			set
+			{
+				selectedProperty = value;
+
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedProperty)));
+			}
+		}
+
+		private AnalysisDataset selectedDataset;
+		public AnalysisDataset SelectedDataset
+		{
+			get => selectedDataset;
+			set
+			{
+				selectedDataset = value;
+
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedDataset)));
+			}
+		}
+
+		private TabItem selectedTab;
+		public TabItem SelectedTab
+		{
+			get => selectedTab;
+			set
+			{
+				selectedTab = value;
+
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedTab)));
+			}
+		}
+
 		public MainWindow()
 		{
 			InitializeComponent();
@@ -36,6 +91,8 @@ namespace UtilityAnalyzerStudio
 			DataContext = this;
 
 			Closing += MainWindow_Closing;
+
+			SelectedTab = (TabItem) TabControlMain.Items[0];
 		}
 
 		private void MainWindow_Closing(object sender, CancelEventArgs e)
@@ -58,13 +115,11 @@ namespace UtilityAnalyzerStudio
 		{
 			if (CurrentProject != null)
 			{
-				CurrentProject.Specimens.CollectionChanged -= Specimens_CollectionChanged;
 				CurrentProject.Properties.CollectionChanged -= Properties_CollectionChanged;
 
 				UpdateSpecimensColumns(CurrentProject.Properties, new List<Property>());
 			}
 
-			project.Specimens.CollectionChanged += Specimens_CollectionChanged;
 			project.Properties.CollectionChanged += Properties_CollectionChanged;
 
 			UpdateSpecimensColumns(new List<Property>(), project.Properties);
@@ -76,40 +131,7 @@ namespace UtilityAnalyzerStudio
 
 		private void Properties_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
 		{
-			if (e.OldItems != null)
-				foreach (Property property in e.OldItems)
-					property.PropertyChanged -= Property_PropertyChanged;
-
-			if (e.NewItems != null)
-				foreach (Property property in e.NewItems)
-					property.PropertyChanged += Property_PropertyChanged;
-
 			UpdateSpecimensColumns((e.OldItems ?? new List<Property>()).Cast<Property>(), (e.NewItems ?? new List<Property>()).Cast<Property>());
-
-			CurrentProject.UpdateAnalysis();
-		}
-
-		private void Specimens_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-		{
-			if (e.OldItems != null)
-				foreach (Specimen specimen in e.OldItems)
-					specimen.PropertyChanged -= Specimen_PropertyChanged;
-
-			if (e.NewItems != null)
-				foreach (Specimen specimen in e.NewItems)
-					specimen.PropertyChanged += Specimen_PropertyChanged;
-
-			CurrentProject.UpdateAnalysis();
-		}
-
-		private void Property_PropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			CurrentProject.UpdateAnalysis();
-		}
-
-		private void Specimen_PropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			CurrentProject.UpdateAnalysis();
 		}
 
 		public void UpdateSpecimensColumns(IEnumerable<Property> removed, IEnumerable<Property> added)
@@ -147,7 +169,8 @@ namespace UtilityAnalyzerStudio
 				{
 					Header = property,
 					HeaderTemplate = headerTemplate,
-					CellTemplate = cellTemplate
+					CellTemplate = cellTemplate,
+					Width = double.NaN
 				};
 
 				GridViewSort.SetPropertyName(col, property.Name);
@@ -158,6 +181,11 @@ namespace UtilityAnalyzerStudio
 
 		private void ButtonAddProperty_Click(object sender, RoutedEventArgs e)
 		{
+			CreateProperty();
+		}
+
+		private void CreateProperty()
+		{
 			var property = new Property();
 			if (!Edit(ref property))
 				return;
@@ -166,6 +194,11 @@ namespace UtilityAnalyzerStudio
 		}
 
 		private void ButtonAddSpecimen_Click(object sender, RoutedEventArgs e)
+		{
+			CreateSpecimen();
+		}
+
+		private void CreateSpecimen()
 		{
 			var editor = new SpecimenEditorWindow(CurrentProject.Properties)
 			{
@@ -176,39 +209,6 @@ namespace UtilityAnalyzerStudio
 			var saved = editor.Edit(ref specimen);
 			if (saved)
 				CurrentProject.Specimens.Add(specimen);
-		}
-
-		private void MenuItemSaveProject_Click(object sender, RoutedEventArgs e)
-		{
-			CurrentProject.Save();
-		}
-
-		private void MenuItemSaveProjectAt_Click(object sender, RoutedEventArgs e)
-		{
-			var path = "";
-			if (!ProjectLoadWindow.TryGetNewProjectPath(this, CurrentProject.Name, ref path))
-				return;
-
-			CurrentProject.Save(path);
-
-			MessageBox.Show("Successfully saved project at " + path, "Project Saved");
-		}
-
-		private void MenuItemCloseProject_Click(object sender, RoutedEventArgs e)
-		{
-			App.Current.TryResetToStart();
-		}
-
-		private void MenuItemExit_Click(object sender, RoutedEventArgs e)
-		{
-			Close();
-		}
-
-		private void MenuItemChangeProjectName_Click(object sender, RoutedEventArgs e)
-		{
-			var name = "";
-			if (ProjectLoadWindow.TryGetProjectName(this, ref name, true))
-				CurrentProject.Name = name;
 		}
 
 		private void ListViewSpecimensItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -251,5 +251,134 @@ namespace UtilityAnalyzerStudio
 
 			return result.HasValue && result.Value;
 		}
+
+		#region Commands
+
+		private void ProjectSaveCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+		{
+			e.CanExecute = CurrentProject.IsDirty;
+		}
+
+		private void ProjectSaveCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+		{
+			CurrentProject.Save();
+		}
+
+		private void ProjectSaveAtCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+		{
+			e.CanExecute = true;
+		}
+
+		private void ProjectSaveAtCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+		{
+			var path = "";
+			if (!ProjectLoadWindow.TryGetNewProjectPath(this, CurrentProject.Name, ref path))
+				return;
+
+			CurrentProject.Save(path);
+
+			MessageBox.Show("Successfully saved project at " + path, "Project Saved");
+		}
+
+		private void ProjectCloseCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+		{
+			e.CanExecute = true;
+		}
+
+		private void ProjectCloseCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+		{
+			App.Current.TryResetToStart();
+		}
+
+		private void ProjectChangeNameCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+		{
+			e.CanExecute = true;
+		}
+
+		private void ProjectChangeNameCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+		{
+			var name = "";
+			if (ProjectLoadWindow.TryGetProjectName(this, ref name, true))
+				CurrentProject.Name = name;
+		}
+
+		private void AppExitCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+		{
+			e.CanExecute = true;
+		}
+
+		private void AppExitCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+		{
+			Close();
+		}
+
+		private void SpecimenCreateCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+		{
+			e.CanExecute = true;
+		}
+
+		private void SpecimenCreateCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+		{
+			CreateSpecimen();
+		}
+
+		private void PropertyCreateCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+		{
+			e.CanExecute = true;
+		}
+
+		private void PropertyCreateCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+		{
+			CreateProperty();
+		}
+
+		private void DeleteSelectedCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+		{
+			e.CanExecute = false;
+
+			if (SelectedTab == null)
+				return;
+
+			if (SelectedTab.Tag.Equals(typeof(Specimen)))
+			{
+				if (SelectedSpecimen == null)
+					return;
+			}
+			else if (SelectedTab.Tag.Equals(typeof(Property)))
+			{
+				if (SelectedProperty == null)
+					return;
+			}
+
+			e.CanExecute = true;
+		}
+
+		private void DeleteSelectedCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+		{
+			if (SelectedTab.Tag.Equals(typeof(Specimen)))
+			{
+				if (SelectedSpecimen == null)
+					return;
+
+				var result = MessageBox.Show($"Are you sure you want to delete the specimen '{SelectedSpecimen.Name}'?", "Deleting Property", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+				if (!result.Equals(MessageBoxResult.Yes))
+					return;
+
+				CurrentProject.Specimens.Remove(SelectedSpecimen);
+			}
+			else if (SelectedTab.Tag.Equals(typeof(Property)))
+			{
+				if (SelectedProperty == null)
+					return;
+
+				var result = MessageBox.Show($"Are you sure you want to delete the property '{SelectedProperty.Name}'? This will also remove it from every specimen.", "Deleting Property", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+				if (!result.Equals(MessageBoxResult.Yes))
+					return;
+
+				CurrentProject.Properties.Remove(SelectedProperty);
+			}
+		}
+
+		#endregion
 	}
 }
