@@ -18,17 +18,7 @@
         <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <Grid x:Name="GridProperties" Margin="0,5,0,0">
                 <Grid.Resources>
-                    <Style TargetType="{x:Type TextBlock}">
-                        <Setter Property="Margin" Value="0,10,10,0" />
-                        <Setter Property="Padding" Value="3" />
-                    </Style>
-                    <Style TargetType="{x:Type CheckBox}">
-                        <Setter Property="Margin" Value="10,10,10,0" />
-                        <Setter Property="Padding" Value="3" />
-                    </Style>
                     <Style TargetType="{x:Type TextBox}">
-                        <Setter Property="Margin" Value="10,10,10,0" />
-                        <Setter Property="Padding" Value="3" />
                         <Setter Property="Validation.ErrorTemplate">
                             <Setter.Value>
                                 <ControlTemplate>

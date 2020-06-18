@@ -1,3 +1,4 @@
+using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,19 +17,16 @@ namespace UtilityAnalyzerStudio
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
-	public partial class MainWindow : Window, INotifyPropertyChanged
+	public partial class MainWindow : INotifyPropertyChanged
 	{
-		public static RoutedCommand AppExitCommand = new RoutedCommand();
-		public static RoutedCommand ProjectChangeNameCommand = new RoutedCommand();
-		public static RoutedCommand SpecimenCreateCommand = new RoutedCommand();
-		public static RoutedCommand PropertyCreateCommand = new RoutedCommand();
+		#region Properties
 
-		public event PropertyChangedEventHandler PropertyChanged;
+		public event PropertyChangedEventHandler? PropertyChanged;
 
-		private AnalysisProject currentProject;
+		private AnalysisProject? currentProject;
 		public AnalysisProject CurrentProject
 		{
-			get => currentProject;
+			get => currentProject ?? throw new NullReferenceException();
 			private set
 			{
 				currentProject = value;
@@ -36,8 +34,8 @@ namespace UtilityAnalyzerStudio
 			}
 		}
 
-		private Specimen selectedSpecimen;
-		public Specimen SelectedSpecimen
+		private Specimen? selectedSpecimen;
+		public Specimen? SelectedSpecimen
 		{
 			get => selectedSpecimen;
 			set
@@ -48,8 +46,8 @@ namespace UtilityAnalyzerStudio
 			}
 		}
 
-		private Property selectedProperty;
-		public Property SelectedProperty
+		private Property? selectedProperty;
+		public Property? SelectedProperty
 		{
 			get => selectedProperty;
 			set
@@ -60,8 +58,8 @@ namespace UtilityAnalyzerStudio
 			}
 		}
 
-		private AnalysisDataset selectedDataset;
-		public AnalysisDataset SelectedDataset
+		private AnalysisDataset? selectedDataset;
+		public AnalysisDataset? SelectedDataset
 		{
 			get => selectedDataset;
 			set
@@ -72,8 +70,8 @@ namespace UtilityAnalyzerStudio
 			}
 		}
 
-		private TabItem selectedTab;
-		public TabItem SelectedTab
+		private TabItem? selectedTab;
+		public TabItem? SelectedTab
 		{
 			get => selectedTab;
 			set
@@ -84,7 +82,9 @@ namespace UtilityAnalyzerStudio
 			}
 		}
 
-		public MainWindow()
+		#endregion
+
+		public MainWindow(AnalysisProject project)
 		{
 			InitializeComponent();
 
@@ -93,7 +93,11 @@ namespace UtilityAnalyzerStudio
 			Closing += MainWindow_Closing;
 
 			SelectedTab = (TabItem) TabControlMain.Items[0];
+
+			LoadProject(project);
 		}
+
+		#region Project Management
 
 		private void MainWindow_Closing(object sender, CancelEventArgs e)
 		{
@@ -111,13 +115,13 @@ namespace UtilityAnalyzerStudio
 			CurrentProject.Save();
 		}
 
-		public void LoadProject(AnalysisProject project)
+		private void LoadProject(AnalysisProject project)
 		{
-			if (CurrentProject != null)
+			if (currentProject != null)
 			{
-				CurrentProject.Properties.CollectionChanged -= Properties_CollectionChanged;
+				currentProject.Properties.CollectionChanged -= Properties_CollectionChanged;
 
-				UpdateSpecimensColumns(CurrentProject.Properties, new List<Property>());
+				UpdateSpecimensColumns(currentProject.Properties, new List<Property>());
 			}
 
 			project.Properties.CollectionChanged += Properties_CollectionChanged;
@@ -179,35 +183,21 @@ namespace UtilityAnalyzerStudio
 			}
 		}
 
-		private void ButtonAddProperty_Click(object sender, RoutedEventArgs e)
-		{
-			CreateProperty();
-		}
+		#endregion
+
+		#region Edit & Create
 
 		private void CreateProperty()
 		{
 			var property = new Property();
-			if (!Edit(ref property))
-				return;
-
-			CurrentProject.Properties.Add(property);
-		}
-
-		private void ButtonAddSpecimen_Click(object sender, RoutedEventArgs e)
-		{
-			CreateSpecimen();
+			if (Edit(property))
+				CurrentProject.Properties.Add(property);
 		}
 
 		private void CreateSpecimen()
 		{
-			var editor = new SpecimenEditorWindow(CurrentProject.Properties)
-			{
-				Owner = this
-			};
 			var specimen = new Specimen(CurrentProject.Properties);
-
-			var saved = editor.Edit(ref specimen);
-			if (saved)
+			if (Edit(specimen))
 				CurrentProject.Specimens.Add(specimen);
 		}
 
@@ -216,16 +206,7 @@ namespace UtilityAnalyzerStudio
 			if (!(sender is ListViewItem lvi) || !(lvi.Content is Specimen original))
 				return;
 
-			var editorWindow = new SpecimenEditorWindow(CurrentProject.Properties)
-			{
-				Owner = this
-			};
-
-			var clone = original.Clone();
-			if (!editorWindow.Edit(ref clone))
-				return;
-
-			original.CopyValues(clone);
+			Edit(original);
 		}
 
 		private void ListViewPropertiesItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -233,26 +214,54 @@ namespace UtilityAnalyzerStudio
 			if (!(sender is ListViewItem lvi) || !(lvi.Content is Property original))
 				return;
 
-			var clone = original.Clone();
-			if (!Edit(ref clone))
-				return;
-
-			original.CopyValuesFrom(clone);
+			Edit(original);
 		}
 
-		private bool Edit(ref Property property)
+		private bool Edit(Specimen specimen)
 		{
-			var editorWindow = new PropertyEditorWindow(property)
+			var editorWindow = new SpecimenEditorWindow(CurrentProject.Properties)
+			{
+				Owner = this
+			};
+
+			var clone = specimen.Clone();
+			if (!editorWindow.Edit(ref clone))
+				return false;
+
+			specimen.CopyValues(clone);
+
+			return true;
+		}
+
+		private bool Edit(Property property)
+		{
+			var clone = property.Clone();
+
+			var editorWindow = new PropertyEditorWindow(clone)
 			{
 				Owner = this
 			};
 
 			var result = editorWindow.ShowDialog();
 
-			return result.HasValue && result.Value;
+			if (!result.HasValue || !result.Value)
+				return false;
+
+			property.CopyValues(clone);
+
+			return true;
 		}
 
+		#endregion
+
 		#region Commands
+
+		public static RoutedCommand AppExitCommand = new RoutedCommand();
+		public static RoutedCommand ProjectChangeNameCommand = new RoutedCommand();
+		public static RoutedCommand SpecimenCreateCommand = new RoutedCommand();
+		public static RoutedCommand SpecimenEditCommand = new RoutedCommand();
+		public static RoutedCommand PropertyCreateCommand = new RoutedCommand();
+		public static RoutedCommand PropertyEditCommand = new RoutedCommand();
 
 		private void ProjectSaveCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
 		{
@@ -332,6 +341,32 @@ namespace UtilityAnalyzerStudio
 			CreateProperty();
 		}
 
+		private void SpecimenEditCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+		{
+			e.CanExecute = SelectedSpecimen != null;
+		}
+
+		private void SpecimenEditCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+		{
+			if (SelectedSpecimen == null)
+				return;
+
+			Edit(SelectedSpecimen);
+		}
+
+		private void PropertyEditCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+		{
+			e.CanExecute = SelectedProperty != null;
+		}
+
+		private void PropertyEditCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+		{
+			if (SelectedProperty == null)
+				return;
+
+			Edit(SelectedProperty);
+		}
+
 		private void DeleteSelectedCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
 		{
 			e.CanExecute = false;
@@ -355,6 +390,9 @@ namespace UtilityAnalyzerStudio
 
 		private void DeleteSelectedCommand_Executed(object sender, ExecutedRoutedEventArgs e)
 		{
+			if (SelectedTab == null)
+				return;
+
 			if (SelectedTab.Tag.Equals(typeof(Specimen)))
 			{
 				if (SelectedSpecimen == null)

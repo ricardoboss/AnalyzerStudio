@@ -9,7 +9,7 @@ namespace UtilityAnalyzerStudio
 	/// <summary>
 	/// Interaction logic for ProjectLoadWindow.xaml
 	/// </summary>
-	public partial class ProjectLoadWindow : Window
+	public partial class ProjectLoadWindow
 	{
 		private const string ProjectFileExt = "uasproj";
 		private const string ProjectFileFilter = "Utility Analyzer Project File (.uasproj, .json)|*.uasproj;*.json";
@@ -83,6 +83,9 @@ namespace UtilityAnalyzerStudio
 				return;
 
 			var project = AnalysisProject.OpenFrom(path);
+			if (project == null)
+				return;
+
 			App.Current.Open(project);
 		}
 

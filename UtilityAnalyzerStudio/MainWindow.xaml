@@ -15,27 +15,35 @@
 		<CommandBinding Command="ApplicationCommands.Save" Executed="ProjectSaveCommand_Executed" CanExecute="ProjectSaveCommand_CanExecute" />
 		<CommandBinding Command="ApplicationCommands.SaveAs" Executed="ProjectSaveAtCommand_Executed" CanExecute="ProjectSaveAtCommand_CanExecute" />
 		<CommandBinding Command="ApplicationCommands.Close" Executed="ProjectCloseCommand_Executed" CanExecute="ProjectCloseCommand_CanExecute" />
-        <CommandBinding Command="ApplicationCommands.Delete" Executed="DeleteSelectedCommand_Executed" CanExecute="DeleteSelectedCommand_CanExecute" />
+		<CommandBinding Command="ApplicationCommands.Delete" Executed="DeleteSelectedCommand_Executed" CanExecute="DeleteSelectedCommand_CanExecute" />
 		<CommandBinding Command="{x:Static local:MainWindow.AppExitCommand}" Executed="AppExitCommand_Executed" CanExecute="AppExitCommand_CanExecute" />
 		<CommandBinding Command="{x:Static local:MainWindow.ProjectChangeNameCommand}" Executed="ProjectChangeNameCommand_Executed" CanExecute="ProjectChangeNameCommand_CanExecute" />
 		<CommandBinding Command="{x:Static local:MainWindow.SpecimenCreateCommand}" Executed="SpecimenCreateCommand_Executed" CanExecute="SpecimenCreateCommand_CanExecute" />
 		<CommandBinding Command="{x:Static local:MainWindow.PropertyCreateCommand}" Executed="PropertyCreateCommand_Executed" CanExecute="PropertyCreateCommand_CanExecute" />
+        <CommandBinding Command="{x:Static local:MainWindow.SpecimenEditCommand}" Executed="SpecimenEditCommand_Executed" CanExecute="SpecimenEditCommand_CanExecute" />
+        <CommandBinding Command="{x:Static local:MainWindow.PropertyEditCommand}" Executed="PropertyEditCommand_Executed" CanExecute="PropertyEditCommand_CanExecute" />
 	</Window.CommandBindings>
 	<Window.InputBindings>
 		<KeyBinding Key="S" Modifiers="Ctrl" Command="ApplicationCommands.Save" />
 		<KeyBinding Key="S" Modifiers="Ctrl+Shift" Command="ApplicationCommands.SaveAs" />
 		<KeyBinding Key="W" Modifiers="Ctrl" Command="ApplicationCommands.Close" />
 		<KeyBinding Key="F4" Modifiers="Alt" Command="{x:Static local:MainWindow.AppExitCommand}" />
-        <KeyBinding Key="F2" Modifiers="Ctrl" Command="{x:Static local:MainWindow.ProjectChangeNameCommand}" />
-        <KeyBinding Key="Delete" Command="ApplicationCommands.Delete" />
-    </Window.InputBindings>
+		<KeyBinding Key="F2" Modifiers="Ctrl" Command="{x:Static local:MainWindow.ProjectChangeNameCommand}" />
+		<KeyBinding Key="Delete" Command="ApplicationCommands.Delete" />
+	</Window.InputBindings>
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
 			<RowDefinition />
 		</Grid.RowDefinitions>
 
-		<Menu>
+		<Menu Background="Transparent" Margin="0,0,0,0">
+			<Menu.Resources>
+				<Style TargetType="{x:Type MenuItem}">
+					<Setter Property="Padding" Value="8,5" />
+				</Style>
+			</Menu.Resources>
+			
 			<MenuItem Header="Project">
 				<MenuItem Header="Save Project" Command="ApplicationCommands.Save" />
 				<MenuItem Header="Save Project At..." Command="ApplicationCommands.SaveAs" />
@@ -44,12 +52,6 @@
 				<MenuItem Header="Change Project Name" Command="{x:Static local:MainWindow.ProjectChangeNameCommand}" />
 				<Separator />
 				<MenuItem Header="Exit" Command="{x:Static local:MainWindow.AppExitCommand}" />
-			</MenuItem>
-			<MenuItem Header="Specimen">
-				<MenuItem Header="New Specimen" Command="{x:Static local:MainWindow.SpecimenCreateCommand}" />
-			</MenuItem>
-			<MenuItem Header="Property">
-				<MenuItem Header="New Property" Command="{x:Static local:MainWindow.PropertyCreateCommand}" />
 			</MenuItem>
 		</Menu>
 
@@ -62,12 +64,12 @@
 					</Grid.RowDefinitions>
 
 					<StackPanel Grid.Row="0">
-						<Button Click="ButtonAddSpecimen_Click" HorizontalAlignment="Left" Margin="5">Add Specimen</Button>
+                        <Button Command="{x:Static local:MainWindow.SpecimenCreateCommand}" HorizontalAlignment="Left" Margin="10">Create Specimen</Button>
 					</StackPanel>
 
-                    <ListView Grid.Row="1"
+					<ListView Grid.Row="1"
 							  ItemsSource="{Binding CurrentProject.Specimens}"
-                              SelectedItem="{Binding SelectedSpecimen}"
+							  SelectedItem="{Binding SelectedSpecimen}"
 							  ext:GridViewSort.AutoSort="True">
 						<ListView.View>
 							<GridView x:Name="SpecimensGridView">
@@ -81,10 +83,17 @@
 								<EventSetter Event="MouseDoubleClick" Handler="ListViewSpecimensItem_MouseDoubleClick" />
 							</Style>
 						</ListView.ItemContainerStyle>
+                        <ListView.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Create" Command="{x:Static local:MainWindow.SpecimenCreateCommand}" />
+                                <MenuItem Header="Edit" Command="{x:Static local:MainWindow.SpecimenEditCommand}" />
+                                <MenuItem Header="Delete" Command="ApplicationCommands.Delete" />
+                            </ContextMenu>
+                        </ListView.ContextMenu>
 					</ListView>
 				</Grid>
 			</TabItem>
-            <TabItem Header="Properties" Tag="{x:Type models:Property}">
+			<TabItem Header="Properties" Tag="{x:Type models:Property}">
 				<Grid>
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
@@ -92,7 +101,7 @@
 					</Grid.RowDefinitions>
 
 					<StackPanel Grid.Row="0">
-						<Button Click="ButtonAddProperty_Click" HorizontalAlignment="Left" Margin="5">Add Property</Button>
+                        <Button HorizontalAlignment="Left" Margin="10" Command="{x:Static local:MainWindow.PropertyCreateCommand}">Create Property</Button>
 					</StackPanel>
 
 					<ListView Grid.Row="1"
@@ -110,14 +119,21 @@
 							</GridView>
 						</ListView.View>
 						<ListView.ItemContainerStyle>
-							<Style TargetType="{x:Type ListViewItem}">
+							<Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource BaseListViewItem}">
 								<EventSetter Event="MouseDoubleClick" Handler="ListViewPropertiesItem_MouseDoubleClick" />
 							</Style>
-						</ListView.ItemContainerStyle>
-					</ListView>
+                        </ListView.ItemContainerStyle>
+                        <ListView.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Create" Command="{x:Static local:MainWindow.PropertyCreateCommand}" />
+                                <MenuItem Header="Edit" Command="{x:Static local:MainWindow.PropertyEditCommand}" />
+                                <MenuItem Header="Delete" Command="ApplicationCommands.Delete" />
+                            </ContextMenu>
+                        </ListView.ContextMenu>
+                    </ListView>
 				</Grid>
 			</TabItem>
-            <TabItem Header="Analysis" Tag="{x:Type models:AnalysisDataset}">
+			<TabItem Header="Analysis" Tag="{x:Type models:AnalysisDataset}">
 				<ListView Grid.Row="1"
 						  ItemsSource="{Binding CurrentProject.Datasets}"
 						  SelectedItem="{Binding SelectedDataset}"

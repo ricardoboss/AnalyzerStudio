@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -12,14 +12,14 @@ namespace UtilityAnalyzerStudio
     /// <summary>
     /// Interaction logic for PropertyEditorWindow.xaml
     /// </summary>
-    public partial class PropertyEditorWindow : Window, INotifyPropertyChanged
+    public partial class PropertyEditorWindow : INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void SetProperty<T>(ref T property, T value, [CallerMemberName] string propertyName = null, params string[] propertyNames)
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void SetProperty<T>(ref T property, T value, [CallerMemberName] string? propertyName = null, params string[] propertyNames)
         {
             property = value;
 
-            var properties = new List<string>(propertyNames) { propertyName };
+            var properties = new List<string?>(propertyNames) { propertyName };
 
             foreach (var prop in properties)
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
@@ -52,7 +52,12 @@ namespace UtilityAnalyzerStudio
 
             DataContext = this;
 
-            Property = property;
+            this.property = property;
+
+			selectedTypeIndex = Array.IndexOf(
+                Enum.GetValues(typeof(PropertyType)),
+                property.Type
+			);
 
             SelectedStrategyIndex = Array.IndexOf(
                 Enum.GetValues(typeof(NormalizationStrategy)),
@@ -78,12 +83,12 @@ namespace UtilityAnalyzerStudio
 
         private void ComboBoxType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Property.Type = (PropertyType)Enum.GetValues(typeof(PropertyType)).GetValue(SelectedTypeIndex);
+            Property.Type = (PropertyType)(Enum.GetValues(typeof(PropertyType)).GetValue(SelectedTypeIndex) ?? throw new NullReferenceException());
         }
 
         private void ComboBoxNormalizationStrategy_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Property.NormalizationStrategy = (NormalizationStrategy)Enum.GetValues(typeof(NormalizationStrategy)).GetValue(SelectedStrategyIndex);
+            Property.NormalizationStrategy = (NormalizationStrategy)(Enum.GetValues(typeof(NormalizationStrategy)).GetValue(SelectedStrategyIndex) ?? throw new NullReferenceException());
         }
     }
 }

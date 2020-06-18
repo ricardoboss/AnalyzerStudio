@@ -37,8 +37,7 @@ namespace UtilityAnalyzerStudio.Extensions
 					null,
 					(o, e) =>
 					{
-						ItemsControl listView = o as ItemsControl;
-						if (listView != null)
+						if (o is ItemsControl listView)
 						{
 							if (!GetAutoSort(listView)) // Don't change click handler if AutoSort enabled
 							{
@@ -76,8 +75,7 @@ namespace UtilityAnalyzerStudio.Extensions
 					false,
 					(o, e) =>
 					{
-						ListView listView = o as ListView;
-						if (listView != null)
+						if (o is ListView listView)
 						{
 							if (GetCommand(listView) == null) // Don't change click handler if a command is set
 							{
@@ -182,37 +180,32 @@ namespace UtilityAnalyzerStudio.Extensions
 
 		private static void ColumnHeader_Click(object sender, RoutedEventArgs e)
 		{
-			GridViewColumnHeader headerClicked = e.OriginalSource as GridViewColumnHeader;
-			if (headerClicked != null && headerClicked.Column != null)
+			if (!(e.OriginalSource is GridViewColumnHeader headerClicked) || headerClicked.Column == null)
+				return;
+
+			var propertyName = GetPropertyName(headerClicked.Column);
+			if (string.IsNullOrEmpty(propertyName))
+				return;
+
+			var listView = GetAncestor<ListView>(headerClicked);
+			if (listView == null)
+				return;
+
+			var command = GetCommand(listView);
+			if (command != null)
 			{
-				string propertyName = GetPropertyName(headerClicked.Column);
-				if (!string.IsNullOrEmpty(propertyName))
-				{
-					ListView listView = GetAncestor<ListView>(headerClicked);
-					if (listView != null)
-					{
-						ICommand command = GetCommand(listView);
-						if (command != null)
-						{
-							if (command.CanExecute(propertyName))
-							{
-								command.Execute(propertyName);
-							}
-						}
-						else if (GetAutoSort(listView))
-						{
-							ApplySort(listView.Items, propertyName, listView, headerClicked);
-						}
-					}
-				}
+				if (command.CanExecute(propertyName))
+					command.Execute(propertyName);
 			}
+			else if (GetAutoSort(listView))
+				ApplySort(listView.Items, propertyName, listView, headerClicked);
 		}
 
 		#endregion
 
 		#region Helper methods
 
-		public static T GetAncestor<T>(DependencyObject reference) where T : DependencyObject
+		public static T? GetAncestor<T>(DependencyObject reference) where T : DependencyObject
 		{
 			DependencyObject parent = VisualTreeHelper.GetParent(reference);
 			while (!(parent is T))
@@ -289,9 +282,9 @@ namespace UtilityAnalyzerStudio.Extensions
 
 		private class SortGlyphAdorner : Adorner
 		{
-			private GridViewColumnHeader _columnHeader;
-			private ListSortDirection _direction;
-			private ImageSource _sortGlyph;
+			private readonly GridViewColumnHeader _columnHeader;
+			private readonly ListSortDirection _direction;
+			private readonly ImageSource _sortGlyph;
 
 			public SortGlyphAdorner(GridViewColumnHeader columnHeader, ListSortDirection direction, ImageSource sortGlyph)
 				: base(columnHeader)
@@ -316,17 +309,21 @@ namespace UtilityAnalyzerStudio.Extensions
 					y2 = tmp;
 				}
 
-				PathSegmentCollection pathSegmentCollection = new PathSegmentCollection();
-				pathSegmentCollection.Add(new LineSegment(new Point(x2, y1), true));
-				pathSegmentCollection.Add(new LineSegment(new Point(x3, y2), true));
+				PathSegmentCollection pathSegmentCollection = new PathSegmentCollection
+				{
+					new LineSegment(new Point(x2, y1), true),
+					new LineSegment(new Point(x3, y2), true)
+				};
 
 				PathFigure pathFigure = new PathFigure(
 					new Point(x1, y1),
 					pathSegmentCollection,
 					true);
 
-				PathFigureCollection pathFigureCollection = new PathFigureCollection();
-				pathFigureCollection.Add(pathFigure);
+				PathFigureCollection pathFigureCollection = new PathFigureCollection
+				{
+					pathFigure
+				};
 
 				PathGeometry pathGeometry = new PathGeometry(pathFigureCollection);
 				return pathGeometry;

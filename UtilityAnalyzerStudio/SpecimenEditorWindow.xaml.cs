@@ -1,4 +1,4 @@
-﻿using Dynamitey;
+using Dynamitey;
 
 using System;
 using System.Collections.Generic;
@@ -18,14 +18,14 @@ namespace UtilityAnalyzerStudio
     /// <summary>
     /// Interaction logic for SpecimenEditorWindow.xaml
     /// </summary>
-    public partial class SpecimenEditorWindow : Window, INotifyPropertyChanged
+    public partial class SpecimenEditorWindow : INotifyPropertyChanged
     {
-        private readonly IEnumerable<Property> Properties;
         private readonly Dictionary<Property, FrameworkElement> propertyInputMap = new Dictionary<Property, FrameworkElement>();
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
-        public bool CanSave
+		private bool canSave = false;
+		public bool CanSave
         {
             get => canSave;
             set
@@ -35,15 +35,12 @@ namespace UtilityAnalyzerStudio
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CanSave)));
             }
         }
-        private bool canSave = false;
-
 
         public SpecimenEditorWindow(IEnumerable<Property> properties)
         {
             InitializeComponent();
 
             DataContext = this;
-            Properties = properties;
 
             int row = 2; // row = 0 are headers, row = 1 is the name
             foreach (var prop in properties)
@@ -87,7 +84,7 @@ namespace UtilityAnalyzerStudio
 
         private FrameworkElement GenerateInput(int row, Property property)
         {
-            ValidationRule validationRule = property.Type switch
+            var validationRule = property.Type switch
             {
                 PropertyType.Double => new ParseableDoubleRule(),
                 _ => null
@@ -150,20 +147,6 @@ namespace UtilityAnalyzerStudio
             return result.HasValue && result.Value;
         }
 
-        private void PopulateFromEditorValues(Specimen specimen)
-        {
-            specimen.Name = TextBoxName.Text;
-
-            foreach (var prop in Properties)
-            {
-                var inputField = propertyInputMap[prop];
-                if (!TryGetValue(inputField, prop.Type, out var value))
-                    continue;
-
-                Dynamic.InvokeSet(specimen, prop.Name, value);
-            }
-        }
-
         private void ButtonSave_Click(object sender, RoutedEventArgs e)
         {
             ButtonSave.Focus();
@@ -207,7 +190,7 @@ namespace UtilityAnalyzerStudio
                 CanSave = !propertyInputMap.Values.Any(input => Validation.GetHasError(input));
         }
 
-        private bool TryGetValue(FrameworkElement input, PropertyType type, out object value)
+        private bool TryGetValue(FrameworkElement input, PropertyType type, out object? value)
         {
             value = null;
 

@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 
 using System;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ namespace UtilityAnalyzerStudio.Models
     public class Specimen : DynamicObject, INotifyPropertyChanged, ICloneable
     {
         [JsonProperty]
-        public string Name
+        public string? Name
         {
             get => name;
             set
@@ -21,12 +21,12 @@ namespace UtilityAnalyzerStudio.Models
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name)));
             }
         }
-        private string name;
+        private string? name;
 
         [JsonProperty]
-        public readonly Dictionary<string, object> Properties = new Dictionary<string, object>();
+        public readonly Dictionary<string, object?> Properties = new Dictionary<string, object?>();
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         public Specimen()
         {
@@ -39,21 +39,21 @@ namespace UtilityAnalyzerStudio.Models
                     Properties[p.Name] = p.DefaultValue;
         }
 
-        private Specimen(string name, Dictionary<string, object> properties)
+        private Specimen(string? name, Dictionary<string, object?> properties)
         {
             Name = name;
 
-            CopyValues(properties);
+            CopyValues(properties, false);
         }
 
-        public override bool TryGetMember(GetMemberBinder binder, out object result)
+        public override bool TryGetMember(GetMemberBinder binder, out object? result)
         {
             result = Properties.FirstOrDefault(p => p.Key.Equals(binder.Name)).Value;
 
             return true;
         }
 
-        public override bool TrySetMember(SetMemberBinder binder, object value)
+        public override bool TrySetMember(SetMemberBinder binder, object? value)
         {
             //var property = MainWindow.CurrentProject.Properties.First(p => p.Name.Equals(binder.Name));
             //if (property == null)
@@ -82,14 +82,14 @@ namespace UtilityAnalyzerStudio.Models
             return new Specimen(Name, Properties);
         }
 
-        public void CopyValues(Specimen from)
+        public void CopyValues(Specimen from, bool notifyChanges = true)
         {
             Name = from.Name;
 
-            CopyValues(from.Properties);
+            CopyValues(from.Properties, notifyChanges);
         }
 
-        private void CopyValues(Dictionary<string, object> properties)
+        private void CopyValues(Dictionary<string, object?> properties, bool notifyChanges)
         {
             foreach (var pair in properties)
             {
@@ -98,7 +98,8 @@ namespace UtilityAnalyzerStudio.Models
                 else
                     Properties[pair.Key] = pair.Value;
 
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(pair.Key));
+				if (notifyChanges)
+					PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(pair.Key));
             }
         }
     }

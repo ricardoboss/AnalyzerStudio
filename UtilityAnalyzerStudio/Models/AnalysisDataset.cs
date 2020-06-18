@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -22,7 +22,7 @@ namespace UtilityAnalyzerStudio.Models
 
         public AnalysisDataset(Specimen specimen)
         {
-            Specimen = specimen;
+            this.specimen = specimen;
         }
 
         public void UpdateValue(IEnumerable<Specimen> specimens, IEnumerable<Property> properties)

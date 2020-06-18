@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.IO;
+using System.Reflection;
 using System.Windows;
 
 using UtilityAnalyzerStudio.Models;
@@ -11,9 +12,11 @@ namespace UtilityAnalyzerStudio
     /// </summary>
     public partial class App : Application
     {
-        public static new App Current => (App)Application.Current;
+		public static string Version => "v" + Assembly.GetEntryAssembly()?.GetName().Version?.ToString(2) ?? "unknown";
 
-        private MainWindow ProjectWindow;
+		public static new App Current => (App)Application.Current;
+
+        private MainWindow? ProjectWindow;
         private ProjectLoadWindow ProjectLoadWindow { get; } = new ProjectLoadWindow();
 
         private void Application_Startup(object sender, StartupEventArgs e)
@@ -26,7 +29,8 @@ namespace UtilityAnalyzerStudio
                 if (File.Exists(path))
                 {
                     var project = AnalysisProject.OpenFrom(path);
-                    Open(project);
+					if (project != null)
+						Open(project);
 
                     return;
                 }
@@ -43,8 +47,7 @@ namespace UtilityAnalyzerStudio
             if (!TryCloseProjectWindow())
                 return false;
 
-            ProjectWindow = new MainWindow();
-            ProjectWindow.LoadProject(project);
+            ProjectWindow = new MainWindow(project);
             ProjectWindow.Closed += (o, e) =>
             {
                 if (MainWindow != null)
@@ -81,7 +84,7 @@ namespace UtilityAnalyzerStudio
                 return true;
 
             var isClosed = false;
-            void closedListener(object o, EventArgs e) => isClosed = true;
+            void closedListener(object? o, EventArgs e) => isClosed = true;
 
             ProjectWindow.Closed += closedListener;
             ProjectWindow.Close();
