@@ -44,22 +44,32 @@ namespace AnalyzerStudio.Models
 		{
 			var json = File.ReadAllText(path);
 
+			return OpenFromJson(json, path);
+		}
+
+		public static AnalysisProject? OpenFromJson(string json, string pathContent = "<unknown>")
+		{
 			var settings = AnalysisProject.settings;
 			string? errorMessage = null;
-			settings.Error = (o, e) => errorMessage = e.ErrorContext.Error.Message;
+			settings.Error = (o, e) =>
+			{
+				errorMessage = e.ErrorContext.Error.Message;
+
+				e.ErrorContext.Handled = true;
+			};
 
 			var project = JsonConvert.DeserializeObject<AnalysisProject>(json, settings);
 			if (project == null)
 			{
 				if (errorMessage != null)
-					MessageBox.Show($"Failed to load project: {errorMessage}", "Open Project Failed", MessageBoxButton.OK);
+					MessageBox.Show($"Failed to load project: {errorMessage}", "Open Project Failed", MessageBoxButton.OK, MessageBoxImage.Error);
 				else
-					MessageBox.Show("Failed to load project.", "Open Project Failed", MessageBoxButton.OK);
+					MessageBox.Show("Failed to load project.", "Open Project Failed", MessageBoxButton.OK, MessageBoxImage.Error);
 
 				return null;
 			}
 
-			project.Path = path;
+			project.Path = pathContent;
 
 			return project;
 		}
@@ -109,22 +119,24 @@ namespace AnalyzerStudio.Models
 		[JsonIgnore]
 		public ObservableCollection<AnalysisDataset> Datasets { get; } = new ObservableCollection<AnalysisDataset>();
 
-		private AnalysisProject(string name)
+		private AnalysisProject(string? name)
 		{
-			Name = name;
+			Name = name ?? throw new NullReferenceException("No project name given!");
 
 			Properties.CollectionChanged += Properties_CollectionChanged;
 			Specimens.CollectionChanged += Specimens_CollectionChanged;
 		}
 
 		[JsonConstructor]
-		public AnalysisProject(string name, IEnumerable<Property> properties, IEnumerable<Specimen> specimens) : this(name)
+		public AnalysisProject(string? name, IEnumerable<Property>? properties, IEnumerable<Specimen>? specimens) : this(name)
 		{
-			foreach (var p in properties)
-				Properties.Add(p);
+			if (properties != null)
+				foreach (var p in properties)
+					Properties.Add(p);
 
-			foreach (var s in specimens)
-				Specimens.Add(s);
+			if (specimens != null)
+				foreach (var s in specimens)
+					Specimens.Add(s);
 
 			IsDirty = false;
 		}

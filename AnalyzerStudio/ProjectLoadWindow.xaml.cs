@@ -11,9 +11,6 @@ namespace AnalyzerStudio
 	/// </summary>
 	public partial class ProjectLoadWindow
 	{
-		private const string ProjectFileExt = "uasproj";
-		private const string ProjectFileFilter = "Utility Analyzer Project File (.uasproj, .json)|*.uasproj;*.json";
-
 		public ProjectLoadWindow()
 		{
 			InitializeComponent();
@@ -63,8 +60,8 @@ namespace AnalyzerStudio
 			{
 				FileName = name,
 				AddExtension = true,
-				DefaultExt = ProjectFileExt,
-				Filter = ProjectFileFilter
+				DefaultExt = App.ProjectFileExtension,
+				Filter = App.ProjectFileFilter
 			};
 
 			var result = sfd.ShowDialog(owner);
@@ -93,8 +90,8 @@ namespace AnalyzerStudio
 		{
 			var ofd = new OpenFileDialog
 			{
-				DefaultExt = ProjectFileExt,
-				Filter = ProjectFileFilter
+				DefaultExt = App.ProjectFileExtension,
+				Filter = App.ProjectFileFilter
 			};
 
 			var result = ofd.ShowDialog(owner);

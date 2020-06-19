@@ -1,9 +1,13 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Windows;
 
+using AnalyzerStudio.Extensions;
 using AnalyzerStudio.Models;
+
+using Microsoft.Win32;
 
 namespace AnalyzerStudio
 {
@@ -15,6 +19,8 @@ namespace AnalyzerStudio
 		public static string Version => "v" + Assembly.GetEntryAssembly()?.GetName().Version?.ToString(2) ?? "unknown";
 		public static string Name => Assembly.GetEntryAssembly()?.GetName().Name ?? "unknown";
 		public static string Title => $"{Name} {Version}";
+		public static string ProjectFileExtension => "asproj";
+		public static string ProjectFileFilter => $"Analyzer Studio Project File|*.{ProjectFileExtension}|JSON Project File|*.json";
 
 		public static new App Current => (App)Application.Current;
 
@@ -23,28 +29,59 @@ namespace AnalyzerStudio
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+			RegistryManager.Init();
+
             ProjectLoadWindow.Closed += (o, e) => Shutdown();
 
             if (e.Args.Length > 0)
             {
-                var path = e.Args[0];
-                if (File.Exists(path))
-                {
-                    var project = AnalysisProject.OpenFrom(path);
-					if (project != null)
-						Open(project);
+                var firstArg = e.Args[0];
 
-                    return;
-                }
+				switch (firstArg)
+				{
+					case "--install-extension":
+						RegistryManager.InstallExtension();
+						Shutdown();
+						return;
 
-                MessageBox.Show($"No project file found at '{path}'.", "Project open failed", MessageBoxButton.OK, MessageBoxImage.Error);
+					case "--uninstall-extension":
+						RegistryManager.UninstallExtension();
+						Shutdown();
+						return;
+
+					default:
+						if (OpenFromCLI(firstArg))
+							return;
+
+						break;
+				}
             }
 
             MainWindow = ProjectLoadWindow;
             MainWindow.Show();
-        }
+		}
 
-        public bool Open(AnalysisProject project)
+		private void Application_Exit(object sender, ExitEventArgs e)
+		{
+			RegistryManager.SetFirstRan();
+		}
+
+		private bool OpenFromCLI(string path)
+		{
+			if (!File.Exists(path))
+			{
+				MessageBox.Show($"No project file found at '{path}'.", "Project open failed", MessageBoxButton.OK, MessageBoxImage.Error);
+				return false;
+			}
+
+			var project = AnalysisProject.OpenFrom(path);
+			if (project == null)
+				return false;
+
+			return Open(project);
+		}
+
+		public bool Open(AnalysisProject project)
         {
             if (!TryCloseProjectWindow())
                 return false;
@@ -99,5 +136,5 @@ namespace AnalyzerStudio
 
             return true;
         }
-    }
+	}
 }
