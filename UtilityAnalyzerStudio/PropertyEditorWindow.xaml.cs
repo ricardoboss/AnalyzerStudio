@@ -5,9 +5,9 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 
-using UtilityAnalyzerStudio.Models;
+using AnalyzerStudio.Models;
 
-namespace UtilityAnalyzerStudio
+namespace AnalyzerStudio
 {
     /// <summary>
     /// Interaction logic for PropertyEditorWindow.xaml

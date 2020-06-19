@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace UtilityAnalyzerStudio.Models
+namespace AnalyzerStudio.Models
 {
     public class AnalysisDataset : BaseModel
     {

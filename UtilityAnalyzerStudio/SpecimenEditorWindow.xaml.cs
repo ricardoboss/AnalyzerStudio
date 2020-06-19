@@ -9,11 +9,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 
-using UtilityAnalyzerStudio.Converters;
-using UtilityAnalyzerStudio.Models;
-using UtilityAnalyzerStudio.Rules;
+using AnalyzerStudio.Converters;
+using AnalyzerStudio.Models;
+using AnalyzerStudio.Rules;
 
-namespace UtilityAnalyzerStudio
+namespace AnalyzerStudio
 {
     /// <summary>
     /// Interaction logic for SpecimenEditorWindow.xaml

@@ -8,7 +8,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace UtilityAnalyzerStudio.Extensions
+namespace AnalyzerStudio.Extensions
 {
 	/// <summary>
 	/// https://thomaslevesque.com/2009/08/04/wpf-automatically-sort-a-gridview-continued/

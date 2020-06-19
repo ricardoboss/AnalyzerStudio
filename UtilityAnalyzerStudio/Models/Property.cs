@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-namespace UtilityAnalyzerStudio.Models
+namespace AnalyzerStudio.Models
 {
     public enum NormalizationStrategy
     {

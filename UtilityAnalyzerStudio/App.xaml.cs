@@ -3,9 +3,9 @@ using System.IO;
 using System.Reflection;
 using System.Windows;
 
-using UtilityAnalyzerStudio.Models;
+using AnalyzerStudio.Models;
 
-namespace UtilityAnalyzerStudio
+namespace AnalyzerStudio
 {
     /// <summary>
     /// Interaction logic for App.xaml
@@ -13,6 +13,8 @@ namespace UtilityAnalyzerStudio
     public partial class App : Application
     {
 		public static string Version => "v" + Assembly.GetEntryAssembly()?.GetName().Version?.ToString(2) ?? "unknown";
+		public static string Name => Assembly.GetEntryAssembly()?.GetName().Name ?? "unknown";
+		public static string Title => $"{Name} {Version}";
 
 		public static new App Current => (App)Application.Current;
 

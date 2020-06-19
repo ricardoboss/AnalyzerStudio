@@ -2,9 +2,9 @@ using Microsoft.Win32;
 
 using System.Windows;
 
-using UtilityAnalyzerStudio.Models;
+using AnalyzerStudio.Models;
 
-namespace UtilityAnalyzerStudio
+namespace AnalyzerStudio
 {
 	/// <summary>
 	/// Interaction logic for ProjectLoadWindow.xaml

@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using System.Windows.Data;
 
-namespace UtilityAnalyzerStudio.Converters
+namespace AnalyzerStudio.Converters
 {
     [ValueConversion(typeof(double), typeof(string))]
     class TextToDoubleConverter : IValueConverter

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace UtilityAnalyzerStudio.Models
+namespace AnalyzerStudio.Models
 {
     public abstract class BaseModel : INotifyPropertyChanged
     {

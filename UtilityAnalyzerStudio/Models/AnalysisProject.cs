@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Windows;
 
-namespace UtilityAnalyzerStudio.Models
+namespace AnalyzerStudio.Models
 {
 	public class AnalysisProject : BaseModel
 	{

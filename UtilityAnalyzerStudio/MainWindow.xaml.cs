@@ -9,10 +9,10 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 
-using UtilityAnalyzerStudio.Extensions;
-using UtilityAnalyzerStudio.Models;
+using AnalyzerStudio.Extensions;
+using AnalyzerStudio.Models;
 
-namespace UtilityAnalyzerStudio
+namespace AnalyzerStudio
 {
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
@@ -20,6 +20,8 @@ namespace UtilityAnalyzerStudio
 	public partial class MainWindow : INotifyPropertyChanged
 	{
 		#region Properties
+
+		public string MainTitle => $"{CurrentProject.ProjectTitle} - {App.Title}";
 
 		public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -30,7 +32,15 @@ namespace UtilityAnalyzerStudio
 			private set
 			{
 				currentProject = value;
+
 				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentProject)));
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MainTitle)));
+
+				currentProject.PropertyChanged += (o, e) =>
+				{
+					if (e.PropertyName.Equals(nameof(AnalysisProject.ProjectTitle)))
+						PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MainTitle)));
+				};
 			}
 		}
 

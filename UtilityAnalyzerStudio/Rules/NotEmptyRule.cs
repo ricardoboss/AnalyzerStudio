@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System.Windows.Controls;
 
-namespace UtilityAnalyzerStudio.Rules
+namespace AnalyzerStudio.Rules
 {
     public class NotEmptyRule : ValidationRule
     {

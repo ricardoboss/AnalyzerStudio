@@ -1,17 +1,17 @@
-﻿<Window x:Class="UtilityAnalyzerStudio.MainWindow"
+﻿<Window x:Class="AnalyzerStudio.MainWindow"
 		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-		xmlns:local="clr-namespace:UtilityAnalyzerStudio"
-		xmlns:models="clr-namespace:UtilityAnalyzerStudio.Models"
-		xmlns:ext="clr-namespace:UtilityAnalyzerStudio.Extensions"
+		xmlns:local="clr-namespace:AnalyzerStudio"
+		xmlns:models="clr-namespace:AnalyzerStudio.Models"
+		xmlns:ext="clr-namespace:AnalyzerStudio.Extensions"
 		mc:Ignorable="d"
 		d:DataContext="{d:DesignInstance local:MainWindow}"
 		WindowStartupLocation="CenterScreen"
 		WindowState="Maximized"
-		Title="{Binding CurrentProject.ProjectTitle, StringFormat={}{0} - Utility Analyzer Studio}" Height="450" Width="800">
-	<Window.CommandBindings>
+		Title="{Binding MainTitle}" Height="450" Width="800">
+    <Window.CommandBindings>
 		<CommandBinding Command="ApplicationCommands.Save" Executed="ProjectSaveCommand_Executed" CanExecute="ProjectSaveCommand_CanExecute" />
 		<CommandBinding Command="ApplicationCommands.SaveAs" Executed="ProjectSaveAtCommand_Executed" CanExecute="ProjectSaveAtCommand_CanExecute" />
 		<CommandBinding Command="ApplicationCommands.Close" Executed="ProjectCloseCommand_Executed" CanExecute="ProjectCloseCommand_CanExecute" />

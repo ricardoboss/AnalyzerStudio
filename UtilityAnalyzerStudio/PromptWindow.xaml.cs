@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace UtilityAnalyzerStudio
+namespace AnalyzerStudio
 {
 	/// <summary>
 	/// Interaktionslogik für PromptWindow.xaml

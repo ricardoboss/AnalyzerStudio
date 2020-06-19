@@ -9,9 +9,23 @@
     <PublishReadyToRun>true</PublishReadyToRun>
     <PublishSingleFile>true</PublishSingleFile>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <StartupObject>UtilityAnalyzerStudio.App</StartupObject>
+    <StartupObject>AnalyzerStudio.App</StartupObject>
     <Nullable>enable</Nullable>
+    <ApplicationIcon>Resources\logo.ico</ApplicationIcon>
+    <AssemblyName>Analyzer Studio</AssemblyName>
+    <RootNamespace>AnalyzerStudio</RootNamespace>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\logo-ico.xcf" />
+    <None Remove="Resources\logo.svg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\logo.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Dynamitey" Version="2.0.10.189" />
