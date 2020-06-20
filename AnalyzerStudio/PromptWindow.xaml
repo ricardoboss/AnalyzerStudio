@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         WindowStyle="ToolWindow"
         WindowStartupLocation="CenterOwner"
-        Title="" Height="180" Width="250">
+        Title="" Height="180" Width="260">
     <Grid Margin="15">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -33,8 +33,9 @@
             </Grid>
         </ScrollViewer>
 
-        <StackPanel Grid.Row="2" HorizontalAlignment="Right">
-            <Button Click="ButtonOk_Click" Padding="10,5">Ok</Button>
+        <StackPanel Grid.Row="2" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Button Click="ButtonCancel_Click" IsCancel="True" Padding="5,3" Margin="0,0,10,0">Cancel</Button>
+            <Button Click="ButtonOk_Click" IsDefault="True" Padding="5,3">Ok</Button>
         </StackPanel>
     </Grid>
 </Window>

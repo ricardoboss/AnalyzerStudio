@@ -42,19 +42,25 @@
 		    <Menu Background="Transparent">
 			    <Menu.Resources>
 				    <Style TargetType="{x:Type MenuItem}">
-					    <Setter Property="Padding" Value="8,5" />
+					    <Setter Property="Padding" Value="6,3" />
 				    </Style>
 			    </Menu.Resources>
 			
 			    <MenuItem Header="Project">
 				    <MenuItem Header="Save Project" Command="ApplicationCommands.Save" />
-				    <MenuItem Header="Save Project At..." Command="ApplicationCommands.SaveAs" />
-				    <MenuItem Header="Close Project" Command="ApplicationCommands.Close" />
+				    <MenuItem Header="Save Project At..." Command="ApplicationCommands.SaveAs" InputGestureText="Ctrl + Shift + S" />
+				    <MenuItem Header="Close Project" Command="ApplicationCommands.Close" InputGestureText="Ctrl + W" />
 				    <Separator />
-				    <MenuItem Header="Change Project Name" Command="{x:Static local:MainWindow.ProjectChangeNameCommand}" />
+				    <MenuItem Header="Change Project Name" Command="{x:Static local:MainWindow.ProjectChangeNameCommand}" InputGestureText="Ctrl + F2" />
 				    <Separator />
-				    <MenuItem Header="Exit" Command="{x:Static local:MainWindow.AppExitCommand}" />
+				    <MenuItem Header="Exit" Command="{x:Static local:MainWindow.AppExitCommand}" InputGestureText="Alt + F4" />
 			    </MenuItem>
+                <MenuItem Header="Specimen">
+                    <MenuItem Header="Create new Specimen" Command="{x:Static local:MainWindow.SpecimenCreateCommand}" />
+                </MenuItem>
+                <MenuItem Header="Property">
+                    <MenuItem Header="Create new Property" Command="{x:Static local:MainWindow.PropertyCreateCommand}" />
+                </MenuItem>
                 <MenuItem Header="Help">
                     <MenuItem Header="About" Command="{x:Static local:MainWindow.AppAboutCommand}" />
                 </MenuItem>
@@ -92,7 +98,7 @@
                         <ListView.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="Create" Command="{x:Static local:MainWindow.SpecimenCreateCommand}" />
-                                <MenuItem Header="Edit" Command="{x:Static local:MainWindow.SpecimenEditCommand}" />
+                                <MenuItem Header="Edit" Command="{x:Static local:MainWindow.SpecimenEditCommand}" InputGestureText="Double Click" />
                                 <MenuItem Header="Delete" Command="ApplicationCommands.Delete" />
                             </ContextMenu>
                         </ListView.ContextMenu>
@@ -132,7 +138,7 @@
                         <ListView.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="Create" Command="{x:Static local:MainWindow.PropertyCreateCommand}" />
-                                <MenuItem Header="Edit" Command="{x:Static local:MainWindow.PropertyEditCommand}" />
+                                <MenuItem Header="Edit" Command="{x:Static local:MainWindow.PropertyEditCommand}" InputGestureText="Double Click" />
                                 <MenuItem Header="Delete" Command="ApplicationCommands.Delete" />
                             </ContextMenu>
                         </ListView.ContextMenu>

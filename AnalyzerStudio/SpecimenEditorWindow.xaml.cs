@@ -156,15 +156,11 @@ namespace AnalyzerStudio
                 return;
 
             DialogResult = true;
-
-            Close();
         }
 
         private void ButtonAbort_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = false;
-
-            Close();
         }
 
         private void Input_LostFocus(object sender, RoutedEventArgs e)
