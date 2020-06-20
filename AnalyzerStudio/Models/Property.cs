@@ -11,7 +11,8 @@ namespace AnalyzerStudio.Models
     public enum NormalizationStrategy
     {
         Max,
-        Min
+        Min,
+		InverseMax
     }
 
     public enum PropertyType
@@ -147,7 +148,6 @@ namespace AnalyzerStudio.Models
             switch (NormalizationStrategy)
             {
                 case NormalizationStrategy.Max:
-
                     var max = allValues.Max();
                     if (max == 0)
                         break;
@@ -161,6 +161,14 @@ namespace AnalyzerStudio.Models
 
                     value = min / value;
                     break;
+				case NormalizationStrategy.InverseMax:
+					var max2 = allValues.Max();
+					if (max2 == 0)
+						break;
+
+					value /= max2;
+					value = 1 - value;
+					break;
             }
         }
 
