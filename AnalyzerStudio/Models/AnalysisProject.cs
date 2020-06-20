@@ -293,6 +293,11 @@ namespace AnalyzerStudio.Models
 
 				Datasets.Remove(ds);
 			}
+
+			var orderedDatasets = Datasets.OrderByDescending(d => d.Value).ThenBy(d => d.Specimen.Name);
+			var rank = 1;
+			foreach (var ds in orderedDatasets)
+				ds.Rank = rank++;
 		}
 	}
 }

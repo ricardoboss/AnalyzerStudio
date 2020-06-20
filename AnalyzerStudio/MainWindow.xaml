@@ -150,6 +150,7 @@
                 <ListView.View>
                     <GridView>
                         <GridView.Columns>
+                            <GridViewColumn Width="Auto" Header="#" DisplayMemberBinding="{Binding Rank, StringFormat={}{0}.}" ext:GridViewSort.PropertyName="Rank" />
                             <GridViewColumn Width="Auto" Header="Name" DisplayMemberBinding="{Binding Specimen.Name}" ext:GridViewSort.PropertyName="Specimen.Name" />
                             <GridViewColumn Width="Auto" Header="Value" DisplayMemberBinding="{Binding Value, StringFormat={}{0:P2}}" ext:GridViewSort.PropertyName="Value" />
                         </GridView.Columns>

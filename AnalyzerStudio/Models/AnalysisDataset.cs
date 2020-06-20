@@ -6,6 +6,13 @@ namespace AnalyzerStudio.Models
 {
     public class AnalysisDataset : BaseModel
     {
+		private int rank;
+		public int Rank
+		{
+			get => rank;
+			set => SetProperty(ref rank, value);
+		}
+
         private Specimen specimen;
         public Specimen Specimen
         {
