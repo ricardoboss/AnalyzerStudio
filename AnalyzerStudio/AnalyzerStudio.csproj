@@ -17,6 +17,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="publish\**" />
+    <EmbeddedResource Remove="publish\**" />
+    <None Remove="publish\**" />
+    <Page Remove="publish\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Resources\logo-ico.xcf" />
     <None Remove="Resources\logo.svg" />
   </ItemGroup>

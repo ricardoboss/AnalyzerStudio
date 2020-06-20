@@ -322,7 +322,7 @@ namespace AnalyzerStudio
 		{
 			var aboutWindow = new AboutWindow
 			{
-				Owner = App.Current.ProjectLoadWindow
+				Owner = this
 			};
 			aboutWindow.Show();
 		}
