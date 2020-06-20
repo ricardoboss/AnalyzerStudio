@@ -42,7 +42,7 @@ namespace AnalyzerStudio
 
             DataContext = this;
 
-            int row = 2; // row = 0 are headers, row = 1 is the name
+            var row = 3; // row = 0 are headers, row = 1 is the separator, row = 2 is the name
             foreach (var prop in properties)
             {
                 var propRow = GenerateRowDefinition();

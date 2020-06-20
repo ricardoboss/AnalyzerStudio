@@ -18,7 +18,18 @@
         <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <Grid x:Name="GridProperties" Margin="0,5,0,0">
                 <Grid.Resources>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Setter Property="Margin" Value="10,0" />
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                    </Style>
                     <Style TargetType="{x:Type TextBox}">
+                        <Setter Property="Margin" Value="10,5" />
+                        <Setter Property="Padding" Value="5,3" />
+                    </Style>
+                    <Style TargetType="{x:Type CheckBox}">
+                        <Setter Property="Margin" Value="10,13,0,0" />
+                    </Style>
+                    <Style TargetType="{x:Type FrameworkElement}">
                         <Setter Property="Validation.ErrorTemplate">
                             <Setter.Value>
                                 <ControlTemplate>
@@ -47,13 +58,16 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Row="0" Grid.Column="0" FontStyle="Italic">Property</TextBlock>
                 <TextBlock Grid.Row="0" Grid.Column="1" FontStyle="Italic">Value</TextBlock>
 
-                <TextBlock Grid.Row="1" Grid.Column="0">Name</TextBlock>
-                <TextBox Grid.Row="1" Grid.Column="1" x:Name="TextBoxName" Text="{Binding Name}" TextChanged="Input_TextChanged" LostFocus="Input_LostFocus" />
+                <Rectangle Grid.Row="1" Grid.ColumnSpan="2" Fill="{StaticResource AppDarkWhite}" Height="1" Margin="3" />
+
+                <TextBlock Grid.Row="2" Grid.Column="0">Name</TextBlock>
+                <TextBox Grid.Row="2" Grid.Column="1" x:Name="TextBoxName" Text="{Binding Name}" TextChanged="Input_TextChanged" LostFocus="Input_LostFocus" />
             </Grid>
         </ScrollViewer>
 
