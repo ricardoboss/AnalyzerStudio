@@ -102,5 +102,14 @@ namespace AnalyzerStudio
 
 			return true;
 		}
+
+		private void HyperlinkAbout_Click(object sender, RoutedEventArgs e)
+		{
+			var aboutWindow = new AboutWindow
+			{
+				Owner = this
+			};
+			aboutWindow.Show();
+		}
 	}
 }

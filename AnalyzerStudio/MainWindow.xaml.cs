@@ -267,11 +267,17 @@ namespace AnalyzerStudio
 		#region Commands
 
 		public static RoutedCommand AppExitCommand = new RoutedCommand();
+		public static RoutedCommand AppAboutCommand = new RoutedCommand();
 		public static RoutedCommand ProjectChangeNameCommand = new RoutedCommand();
 		public static RoutedCommand SpecimenCreateCommand = new RoutedCommand();
 		public static RoutedCommand SpecimenEditCommand = new RoutedCommand();
 		public static RoutedCommand PropertyCreateCommand = new RoutedCommand();
 		public static RoutedCommand PropertyEditCommand = new RoutedCommand();
+
+		private void CanAlwaysExecute(object sender, CanExecuteRoutedEventArgs e)
+		{
+			e.CanExecute = true;
+		}
 
 		private void ProjectSaveCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
 		{
@@ -281,11 +287,6 @@ namespace AnalyzerStudio
 		private void ProjectSaveCommand_Executed(object sender, ExecutedRoutedEventArgs e)
 		{
 			CurrentProject.Save();
-		}
-
-		private void ProjectSaveAtCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-		{
-			e.CanExecute = true;
 		}
 
 		private void ProjectSaveAtCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -299,19 +300,9 @@ namespace AnalyzerStudio
 			MessageBox.Show("Successfully saved project at " + path, "Project Saved");
 		}
 
-		private void ProjectCloseCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-		{
-			e.CanExecute = true;
-		}
-
 		private void ProjectCloseCommand_Executed(object sender, ExecutedRoutedEventArgs e)
 		{
-			App.Current.TryResetToStart();
-		}
-
-		private void ProjectChangeNameCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-		{
-			e.CanExecute = true;
+			App.Current.TryCloseCurrent();
 		}
 
 		private void ProjectChangeNameCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -321,29 +312,23 @@ namespace AnalyzerStudio
 				CurrentProject.Name = name;
 		}
 
-		private void AppExitCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-		{
-			e.CanExecute = true;
-		}
-
 		private void AppExitCommand_Executed(object sender, ExecutedRoutedEventArgs e)
 		{
 			Close();
 		}
 
-		private void SpecimenCreateCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+		private void AppAboutCommand_Executed(object sender, ExecutedRoutedEventArgs e)
 		{
-			e.CanExecute = true;
+			var aboutWindow = new AboutWindow
+			{
+				Owner = App.Current.ProjectLoadWindow
+			};
+			aboutWindow.Show();
 		}
 
 		private void SpecimenCreateCommand_Executed(object sender, ExecutedRoutedEventArgs e)
 		{
 			CreateSpecimen();
-		}
-
-		private void PropertyCreateCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-		{
-			e.CanExecute = true;
 		}
 
 		private void PropertyCreateCommand_Executed(object sender, ExecutedRoutedEventArgs e)

@@ -13,13 +13,14 @@
 		Title="{Binding MainTitle}" Height="450" Width="800">
     <Window.CommandBindings>
 		<CommandBinding Command="ApplicationCommands.Save" Executed="ProjectSaveCommand_Executed" CanExecute="ProjectSaveCommand_CanExecute" />
-		<CommandBinding Command="ApplicationCommands.SaveAs" Executed="ProjectSaveAtCommand_Executed" CanExecute="ProjectSaveAtCommand_CanExecute" />
-		<CommandBinding Command="ApplicationCommands.Close" Executed="ProjectCloseCommand_Executed" CanExecute="ProjectCloseCommand_CanExecute" />
+        <CommandBinding Command="ApplicationCommands.SaveAs" Executed="ProjectSaveAtCommand_Executed" CanExecute="CanAlwaysExecute" />
+        <CommandBinding Command="ApplicationCommands.Close" Executed="ProjectCloseCommand_Executed" CanExecute="CanAlwaysExecute" />
 		<CommandBinding Command="ApplicationCommands.Delete" Executed="DeleteSelectedCommand_Executed" CanExecute="DeleteSelectedCommand_CanExecute" />
-		<CommandBinding Command="{x:Static local:MainWindow.AppExitCommand}" Executed="AppExitCommand_Executed" CanExecute="AppExitCommand_CanExecute" />
-		<CommandBinding Command="{x:Static local:MainWindow.ProjectChangeNameCommand}" Executed="ProjectChangeNameCommand_Executed" CanExecute="ProjectChangeNameCommand_CanExecute" />
-		<CommandBinding Command="{x:Static local:MainWindow.SpecimenCreateCommand}" Executed="SpecimenCreateCommand_Executed" CanExecute="SpecimenCreateCommand_CanExecute" />
-		<CommandBinding Command="{x:Static local:MainWindow.PropertyCreateCommand}" Executed="PropertyCreateCommand_Executed" CanExecute="PropertyCreateCommand_CanExecute" />
+        <CommandBinding Command="{x:Static local:MainWindow.AppExitCommand}" Executed="AppExitCommand_Executed" CanExecute="CanAlwaysExecute" />
+        <CommandBinding Command="{x:Static local:MainWindow.AppAboutCommand}" Executed="AppAboutCommand_Executed" CanExecute="CanAlwaysExecute" />
+        <CommandBinding Command="{x:Static local:MainWindow.ProjectChangeNameCommand}" Executed="ProjectChangeNameCommand_Executed" CanExecute="CanAlwaysExecute" />
+        <CommandBinding Command="{x:Static local:MainWindow.SpecimenCreateCommand}" Executed="SpecimenCreateCommand_Executed" CanExecute="CanAlwaysExecute" />
+        <CommandBinding Command="{x:Static local:MainWindow.PropertyCreateCommand}" Executed="PropertyCreateCommand_Executed" CanExecute="CanAlwaysExecute" />
         <CommandBinding Command="{x:Static local:MainWindow.SpecimenEditCommand}" Executed="SpecimenEditCommand_Executed" CanExecute="SpecimenEditCommand_CanExecute" />
         <CommandBinding Command="{x:Static local:MainWindow.PropertyEditCommand}" Executed="PropertyEditCommand_Executed" CanExecute="PropertyEditCommand_CanExecute" />
 	</Window.CommandBindings>
@@ -37,25 +38,30 @@
 			<RowDefinition />
 		</Grid.RowDefinitions>
 
-		<Menu Background="Transparent" Margin="0,0,0,0">
-			<Menu.Resources>
-				<Style TargetType="{x:Type MenuItem}">
-					<Setter Property="Padding" Value="8,5" />
-				</Style>
-			</Menu.Resources>
+        <Grid>
+		    <Menu Background="Transparent">
+			    <Menu.Resources>
+				    <Style TargetType="{x:Type MenuItem}">
+					    <Setter Property="Padding" Value="8,5" />
+				    </Style>
+			    </Menu.Resources>
 			
-			<MenuItem Header="Project">
-				<MenuItem Header="Save Project" Command="ApplicationCommands.Save" />
-				<MenuItem Header="Save Project At..." Command="ApplicationCommands.SaveAs" />
-				<MenuItem Header="Close Project" Command="ApplicationCommands.Close" />
-				<Separator />
-				<MenuItem Header="Change Project Name" Command="{x:Static local:MainWindow.ProjectChangeNameCommand}" />
-				<Separator />
-				<MenuItem Header="Exit" Command="{x:Static local:MainWindow.AppExitCommand}" />
-			</MenuItem>
-		</Menu>
+			    <MenuItem Header="Project">
+				    <MenuItem Header="Save Project" Command="ApplicationCommands.Save" />
+				    <MenuItem Header="Save Project At..." Command="ApplicationCommands.SaveAs" />
+				    <MenuItem Header="Close Project" Command="ApplicationCommands.Close" />
+				    <Separator />
+				    <MenuItem Header="Change Project Name" Command="{x:Static local:MainWindow.ProjectChangeNameCommand}" />
+				    <Separator />
+				    <MenuItem Header="Exit" Command="{x:Static local:MainWindow.AppExitCommand}" />
+			    </MenuItem>
+                <MenuItem Header="Help">
+                    <MenuItem Header="About" Command="{x:Static local:MainWindow.AppAboutCommand}" />
+                </MenuItem>
+		    </Menu>
+        </Grid>
 
-		<TabControl Grid.Row="1" x:Name="TabControlMain" SelectedItem="{Binding SelectedTab}">
+        <TabControl Grid.Row="1" x:Name="TabControlMain" SelectedItem="{Binding SelectedTab}">
 			<TabItem Header="Specimens" Tag="{x:Type models:Specimen}">
 				<Grid>
 					<Grid.RowDefinitions>

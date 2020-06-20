@@ -16,6 +16,7 @@ namespace AnalyzerStudio
     /// </summary>
     public partial class App : Application
     {
+		public static string VersionNumber => Assembly.GetEntryAssembly()?.GetName().Version?.ToString(2) ?? "?";
 		public static string Version => "v" + Assembly.GetEntryAssembly()?.GetName().Version?.ToString(2) ?? "unknown";
 		public static string Name => Assembly.GetEntryAssembly()?.GetName().Name ?? "unknown";
 		public static string Title => $"{Name} {Version}";
@@ -25,13 +26,14 @@ namespace AnalyzerStudio
 		public static new App Current => (App)Application.Current;
 
         private MainWindow? ProjectWindow;
-        private ProjectLoadWindow ProjectLoadWindow { get; } = new ProjectLoadWindow();
+        internal ProjectLoadWindow? ProjectLoadWindow { get; private set; }
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
 			RegistryManager.Init();
 
-            ProjectLoadWindow.Closed += (o, e) => Shutdown();
+			ProjectLoadWindow = new ProjectLoadWindow();
+			ProjectLoadWindow.Closed += (o, e) => Shutdown();
 
             if (e.Args.Length > 0)
             {
@@ -92,12 +94,12 @@ namespace AnalyzerStudio
                 if (MainWindow != null)
                     return;
 
-                ProjectLoadWindow.Close();
+                ProjectLoadWindow?.Close();
             };
 
             MainWindow = ProjectWindow;
 
-            if (ProjectLoadWindow.IsVisible)
+            if (ProjectLoadWindow?.IsVisible ?? false)
                 ProjectLoadWindow.Hide();
 
             MainWindow.Show();
@@ -105,14 +107,14 @@ namespace AnalyzerStudio
             return true;
         }
 
-        public bool TryResetToStart()
+        public bool TryCloseCurrent()
         {
             MainWindow = ProjectLoadWindow;
 
             if (!TryCloseProjectWindow())
                 return false;
 
-            ProjectLoadWindow.Show();
+            ProjectLoadWindow?.Show();
 
             return true;
         }

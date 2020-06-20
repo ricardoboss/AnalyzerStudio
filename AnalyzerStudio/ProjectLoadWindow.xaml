@@ -61,15 +61,13 @@
             </Button>
         </StackPanel>
 
-        <TextBlock Grid.ColumnSpan="2"
+        <TextBlock FontSize="10"
+                   Grid.ColumnSpan="2"
                    Grid.Row="2"
 
                    VerticalAlignment="Bottom"
-                   HorizontalAlignment="Center"
-
-                   Foreground="Gray"
-                   FontSize="10">
-            Licensed under the MIT license by Ricardo Boss
+                   HorizontalAlignment="Center">
+            <Hyperlink Click="HyperlinkAbout_Click" Foreground="{StaticResource AppDarkWhite}">About</Hyperlink>
         </TextBlock>
     </Grid>
 </Window>
