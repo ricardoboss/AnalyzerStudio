@@ -63,6 +63,9 @@
                 </MenuItem>
                 <MenuItem Header="Help">
                     <MenuItem Header="About" Command="{x:Static local:MainWindow.AppAboutCommand}" />
+                    <Separator />
+                    <MenuItem Header="Install file extension association" Click="MenuItemInstallExtension_Click" />
+                    <MenuItem Header="Uninstall file extension association" Click="MenuItemUninstallExtension_Click" />
                 </MenuItem>
 		    </Menu>
         </Grid>

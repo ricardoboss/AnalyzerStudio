@@ -3,6 +3,8 @@ using Microsoft.Win32;
 using System.Windows;
 
 using AnalyzerStudio.Models;
+using AnalyzerStudio.Extensions;
+using System;
 
 namespace AnalyzerStudio
 {
@@ -14,6 +16,37 @@ namespace AnalyzerStudio
 		public ProjectLoadWindow()
 		{
 			InitializeComponent();
+		}
+
+		private void ProjectLoadWindow_Loaded(object sender, RoutedEventArgs e)
+		{
+			if (!RegistryManager.IsFirstRun())
+				return;
+
+			var result = MessageBox.Show(
+				$"Would like to associate '{App.ProjectFileExtension}' files with {App.Name}?\nYou can always remove the association via the 'Help' menu.",
+				"Install File Type",
+				MessageBoxButton.YesNo,
+				MessageBoxImage.Question,
+				MessageBoxResult.No
+			);
+			if (result.Equals(MessageBoxResult.No))
+				return;
+
+			try
+			{
+				RegistryManager.InstallExtension();
+
+				MessageBox.Show("File extension installed!", "Install File Type", MessageBoxButton.OK, MessageBoxImage.Information);
+			}
+			catch (Exception)
+			{
+				MessageBox.Show("Failed to install file extension!", "Install File Type", MessageBoxButton.OK, MessageBoxImage.Error);
+			}
+			finally
+			{
+				RegistryManager.SetFirstRan();
+			}
 		}
 
 		private void ButtonNew_Click(object sender, RoutedEventArgs e)

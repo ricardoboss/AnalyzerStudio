@@ -2,6 +2,7 @@ using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.DirectoryServices.ActiveDirectory;
 using System.Linq;
 using System.Windows;
@@ -413,5 +414,58 @@ namespace AnalyzerStudio
 		}
 
 		#endregion
+
+		private void MenuItemUninstallExtension_Click(object sender, RoutedEventArgs e)
+		{
+			try
+			{
+				RegistryManager.UninstallExtension();
+
+				MessageBox.Show("File association uninstalled!", "File Type Association", MessageBoxButton.OK, MessageBoxImage.Information);
+			}
+			catch (UnauthorizedAccessException)
+			{
+				var psi = new ProcessStartInfo(RegistryManager.ExeLocation, "--uninstall-extension");
+				if (InvokeAsAdmin(psi))
+					MessageBox.Show("File association uninstalled!", "File Type Association", MessageBoxButton.OK, MessageBoxImage.Information);
+				else
+					MessageBox.Show("Could not uninstall file type!", "File Type Association", MessageBoxButton.OK, MessageBoxImage.Warning);
+			}
+			catch (ArgumentException)
+			{
+				MessageBox.Show("File association was already uninstalled!", "File Type Association", MessageBoxButton.OK, MessageBoxImage.Information);
+			}
+		}
+
+		private void MenuItemInstallExtension_Click(object sender, RoutedEventArgs e)
+		{
+			try
+			{
+				RegistryManager.InstallExtension();
+
+				MessageBox.Show("File association installed!", "File Type Association", MessageBoxButton.OK, MessageBoxImage.Information);
+			}
+			catch (UnauthorizedAccessException)
+			{
+				var psi = new ProcessStartInfo(RegistryManager.ExeLocation, "--install-extension");
+				if (InvokeAsAdmin(psi))
+					MessageBox.Show("File association installed!", "File Type Association", MessageBoxButton.OK, MessageBoxImage.Information);
+				else
+					MessageBox.Show("Could not install file type!", "File Type Association", MessageBoxButton.OK, MessageBoxImage.Warning);
+			}
+		}
+
+		private bool InvokeAsAdmin(ProcessStartInfo psi)
+		{
+			psi.UseShellExecute = true;
+			psi.Verb = "runas";
+			psi.CreateNoWindow = true;
+
+			var process = Process.Start(psi);
+
+			process.WaitForExit();
+
+			return process.ExitCode == 0;
+		}
 	}
 }

@@ -1,0 +1,15 @@
+{
+  "profiles": {
+    "AnalyzerStudio": {
+      "commandName": "Project"
+    },
+    "Install Extension": {
+      "commandName": "Project",
+      "commandLineArgs": "--install-extension"
+    },
+    "Uninstall Extension": {
+      "commandName": "Project",
+      "commandLineArgs": "--uninstall-extension"
+    }
+  }
+}

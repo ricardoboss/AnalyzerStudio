@@ -38,7 +38,6 @@ namespace AnalyzerStudio
             if (e.Args.Length > 0)
             {
                 var firstArg = e.Args[0];
-
 				switch (firstArg)
 				{
 					case "--install-extension":
