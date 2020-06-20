@@ -4,9 +4,8 @@
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:local="clr-namespace:AnalyzerStudio"
-		xmlns:models="clr-namespace:AnalyzerStudio.Models"
 		xmlns:ext="clr-namespace:AnalyzerStudio.Extensions"
-		mc:Ignorable="d"
+        mc:Ignorable="d"
 		d:DataContext="{d:DesignInstance local:MainWindow}"
 		WindowStartupLocation="CenterScreen"
 		WindowState="Maximized"
@@ -31,139 +30,169 @@
 		<KeyBinding Key="F4" Modifiers="Alt" Command="{x:Static local:MainWindow.AppExitCommand}" />
 		<KeyBinding Key="F2" Modifiers="Ctrl" Command="{x:Static local:MainWindow.ProjectChangeNameCommand}" />
 		<KeyBinding Key="Delete" Command="ApplicationCommands.Delete" />
-	</Window.InputBindings>
-	<Grid>
+    </Window.InputBindings>
+    <Window.Resources>
+        <GridLength x:Key="SeparatorThickness">6</GridLength>
+        <Style x:Key="Shadow" TargetType="{x:Type FrameworkElement}">
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="0" Opacity="0.3" />
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="Separator" TargetType="{x:Type GridSplitter}" BasedOn="{StaticResource Shadow}">
+            <Setter Property="Background" Value="{StaticResource AppShadyWhite}" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+        </Style>
+        <Style x:Key="TableTitle" TargetType="{x:Type TextBlock}">
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Margin" Value="0,5,0,3" />
+        </Style>
+    </Window.Resources>
+    <Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
-			<RowDefinition />
+            <RowDefinition />
+            <RowDefinition Height="{StaticResource SeparatorThickness}" />
+            <RowDefinition />
 		</Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="{StaticResource SeparatorThickness}" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
 
-        <Grid>
-		    <Menu Background="Transparent">
-			    <Menu.Resources>
-				    <Style TargetType="{x:Type MenuItem}">
-					    <Setter Property="Padding" Value="6,3" />
-				    </Style>
-			    </Menu.Resources>
-			
-			    <MenuItem Header="Project">
-				    <MenuItem Header="Save Project" Command="ApplicationCommands.Save" />
-				    <MenuItem Header="Save Project At..." Command="ApplicationCommands.SaveAs" InputGestureText="Ctrl + Shift + S" />
-				    <MenuItem Header="Close Project" Command="ApplicationCommands.Close" InputGestureText="Ctrl + W" />
-				    <Separator />
-				    <MenuItem Header="Change Project Name" Command="{x:Static local:MainWindow.ProjectChangeNameCommand}" InputGestureText="Ctrl + F2" />
-				    <Separator />
-				    <MenuItem Header="Exit" Command="{x:Static local:MainWindow.AppExitCommand}" InputGestureText="Alt + F4" />
-			    </MenuItem>
-                <MenuItem Header="Specimen">
-                    <MenuItem Header="Create new Specimen" Command="{x:Static local:MainWindow.SpecimenCreateCommand}" />
-                </MenuItem>
-                <MenuItem Header="Property">
-                    <MenuItem Header="Create new Property" Command="{x:Static local:MainWindow.PropertyCreateCommand}" />
-                </MenuItem>
-                <MenuItem Header="Help">
-                    <MenuItem Header="About" Command="{x:Static local:MainWindow.AppAboutCommand}" />
-                    <Separator />
-                    <MenuItem Header="Install file extension association" Click="MenuItemInstallExtension_Click" />
-                    <MenuItem Header="Uninstall file extension association" Click="MenuItemUninstallExtension_Click" />
-                </MenuItem>
-		    </Menu>
+        <Menu Grid.Row="0" Grid.ColumnSpan="3" Background="{StaticResource AppShadyWhite}" Panel.ZIndex="10" Style="{StaticResource Shadow}">
+            <Menu.Resources>
+                <Style TargetType="{x:Type MenuItem}">
+                    <Setter Property="Padding" Value="6,3" />
+                </Style>
+            </Menu.Resources>
+            
+            <MenuItem Header="Project">
+                <MenuItem Header="Save Project" Command="ApplicationCommands.Save" />
+                <MenuItem Header="Save Project At..." Command="ApplicationCommands.SaveAs" InputGestureText="Ctrl + Shift + S" />
+                <MenuItem Header="Close Project" Command="ApplicationCommands.Close" InputGestureText="Ctrl + W" />
+                <Separator />
+                <MenuItem Header="Change Project Name" Command="{x:Static local:MainWindow.ProjectChangeNameCommand}" InputGestureText="Ctrl + F2" />
+                <Separator />
+                <MenuItem Header="Exit" Command="{x:Static local:MainWindow.AppExitCommand}" InputGestureText="Alt + F4" />
+            </MenuItem>
+            <MenuItem Header="Specimen">
+                <MenuItem Header="Create new Specimen" Command="{x:Static local:MainWindow.SpecimenCreateCommand}" />
+            </MenuItem>
+            <MenuItem Header="Property">
+                <MenuItem Header="Create new Property" Command="{x:Static local:MainWindow.PropertyCreateCommand}" />
+            </MenuItem>
+            <MenuItem Header="Help">
+                <MenuItem Header="About" Command="{x:Static local:MainWindow.AppAboutCommand}" />
+                <Separator />
+                <MenuItem Header="Install file extension association" Click="MenuItemInstallExtension_Click" />
+                <MenuItem Header="Uninstall file extension association" Click="MenuItemUninstallExtension_Click" />
+            </MenuItem>
+        </Menu>
+
+        <Grid Grid.Row="1" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Style="{StaticResource TableTitle}">Properties</TextBlock>
+
+            <ListView Grid.Row="1"
+                      SelectionMode="Single"
+				      ItemsSource="{Binding CurrentProject.Properties}"
+				      SelectedItem="{Binding SelectedProperty}"
+					  ext:GridViewSort.AutoSort="True">
+                <ListView.View>
+                    <GridView>
+                        <GridView.Columns>
+                            <GridViewColumn Width="Auto" Header="Name" DisplayMemberBinding="{Binding Name}" ext:GridViewSort.PropertyName="Name" />
+                            <GridViewColumn Width="Auto" Header="Weight" DisplayMemberBinding="{Binding Weight}" ext:GridViewSort.PropertyName="Weight" />
+                            <GridViewColumn Width="Auto" Header="Type" DisplayMemberBinding="{Binding Type}" ext:GridViewSort.PropertyName="Type" />
+                            <GridViewColumn Width="Auto" Header="Normalization Strategy" DisplayMemberBinding="{Binding NormalizationStrategy}" ext:GridViewSort.PropertyName="NormalizationStrategy" />
+                        </GridView.Columns>
+                    </GridView>
+                </ListView.View>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource BaseListViewItem}">
+                        <EventSetter Event="MouseDoubleClick" Handler="ListViewPropertiesItem_MouseDoubleClick" />
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Create" Command="{x:Static local:MainWindow.PropertyCreateCommand}" />
+                        <MenuItem Header="Edit" Command="{x:Static local:MainWindow.PropertyEditCommand}" InputGestureText="Double Click" />
+                        <MenuItem Header="Delete" Command="ApplicationCommands.Delete" />
+                    </ContextMenu>
+                </ListView.ContextMenu>
+            </ListView>
         </Grid>
 
-        <TabControl Grid.Row="1" x:Name="TabControlMain" SelectedItem="{Binding SelectedTab}">
-			<TabItem Header="Specimens" Tag="{x:Type models:Specimen}">
-				<Grid>
-					<Grid.RowDefinitions>
-						<RowDefinition Height="Auto" />
-						<RowDefinition />
-					</Grid.RowDefinitions>
+        <GridSplitter Grid.Row="1" Grid.Column="1" Style="{StaticResource Separator}" />
 
-					<StackPanel Grid.Row="0">
-                        <Button Command="{x:Static local:MainWindow.SpecimenCreateCommand}" HorizontalAlignment="Left" Margin="10">Create Specimen</Button>
-					</StackPanel>
+        <Grid Grid.Row="1" Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
 
-					<ListView Grid.Row="1"
-							  ItemsSource="{Binding CurrentProject.Specimens}"
-							  SelectedItem="{Binding SelectedSpecimen}"
-							  ext:GridViewSort.AutoSort="True">
-						<ListView.View>
-							<GridView x:Name="SpecimensGridView">
-								<GridView.Columns>
-									<GridViewColumn Header="Name" Width="Auto" DisplayMemberBinding="{Binding Name}" ext:GridViewSort.PropertyName="Name" />
-								</GridView.Columns>
-							</GridView>
-						</ListView.View>
-						<ListView.ItemContainerStyle>
-							<Style TargetType="{x:Type ListViewItem}">
-								<EventSetter Event="MouseDoubleClick" Handler="ListViewSpecimensItem_MouseDoubleClick" />
-							</Style>
-						</ListView.ItemContainerStyle>
-                        <ListView.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Create" Command="{x:Static local:MainWindow.SpecimenCreateCommand}" />
-                                <MenuItem Header="Edit" Command="{x:Static local:MainWindow.SpecimenEditCommand}" InputGestureText="Double Click" />
-                                <MenuItem Header="Delete" Command="ApplicationCommands.Delete" />
-                            </ContextMenu>
-                        </ListView.ContextMenu>
-					</ListView>
-				</Grid>
-			</TabItem>
-			<TabItem Header="Properties" Tag="{x:Type models:Property}">
-				<Grid>
-					<Grid.RowDefinitions>
-						<RowDefinition Height="Auto" />
-						<RowDefinition />
-					</Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Style="{StaticResource TableTitle}">Analysis</TextBlock>
 
-					<StackPanel Grid.Row="0">
-                        <Button HorizontalAlignment="Left" Margin="10" Command="{x:Static local:MainWindow.PropertyCreateCommand}">Create Property</Button>
-					</StackPanel>
+            <ListView Grid.Row="1"
+                      ItemsSource="{Binding CurrentProject.Datasets}"
+				      SelectedItem="{Binding SelectedDataset}"
+				      IsSynchronizedWithCurrentItem="True"
+				      ext:GridViewSort.AutoSort="True">
+                <ListView.View>
+                    <GridView>
+                        <GridView.Columns>
+                            <GridViewColumn Width="Auto" Header="Name" DisplayMemberBinding="{Binding Specimen.Name}" ext:GridViewSort.PropertyName="Specimen.Name" />
+                            <GridViewColumn Width="Auto" Header="Value" DisplayMemberBinding="{Binding Value, StringFormat={}{0:P2}}" ext:GridViewSort.PropertyName="Value" />
+                        </GridView.Columns>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </Grid>
 
-					<ListView Grid.Row="1"
-							  ItemsSource="{Binding CurrentProject.Properties}"
-							  SelectedItem="{Binding SelectedProperty}"
-							  ext:GridViewSort.AutoSort="True">
-						<ListView.View>
-							<GridView>
-								<GridView.Columns>
-									<GridViewColumn Width="Auto" Header="Name" DisplayMemberBinding="{Binding Name}" ext:GridViewSort.PropertyName="Name" />
-									<GridViewColumn Width="Auto" Header="Weight" DisplayMemberBinding="{Binding Weight}" ext:GridViewSort.PropertyName="Weight" />
-									<GridViewColumn Width="Auto" Header="Type" DisplayMemberBinding="{Binding Type}" ext:GridViewSort.PropertyName="Type" />
-									<GridViewColumn Width="Auto" Header="Normalization Strategy" DisplayMemberBinding="{Binding NormalizationStrategy}" ext:GridViewSort.PropertyName="NormalizationStrategy" />
-								</GridView.Columns>
-							</GridView>
-						</ListView.View>
-						<ListView.ItemContainerStyle>
-							<Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource BaseListViewItem}">
-								<EventSetter Event="MouseDoubleClick" Handler="ListViewPropertiesItem_MouseDoubleClick" />
-							</Style>
-                        </ListView.ItemContainerStyle>
-                        <ListView.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Create" Command="{x:Static local:MainWindow.PropertyCreateCommand}" />
-                                <MenuItem Header="Edit" Command="{x:Static local:MainWindow.PropertyEditCommand}" InputGestureText="Double Click" />
-                                <MenuItem Header="Delete" Command="ApplicationCommands.Delete" />
-                            </ContextMenu>
-                        </ListView.ContextMenu>
-                    </ListView>
-				</Grid>
-			</TabItem>
-			<TabItem Header="Analysis" Tag="{x:Type models:AnalysisDataset}">
-				<ListView Grid.Row="1"
-						  ItemsSource="{Binding CurrentProject.Datasets}"
-						  SelectedItem="{Binding SelectedDataset}"
-						  IsSynchronizedWithCurrentItem="True"
-						  ext:GridViewSort.AutoSort="True">
-					<ListView.View>
-						<GridView>
-							<GridView.Columns>
-								<GridViewColumn Width="Auto" Header="Name" DisplayMemberBinding="{Binding Specimen.Name}" ext:GridViewSort.PropertyName="Specimen.Name" />
-								<GridViewColumn Width="Auto" Header="Value" DisplayMemberBinding="{Binding Value, StringFormat={}{0:P4}}" ext:GridViewSort.PropertyName="Value" />
-							</GridView.Columns>
-						</GridView>
-					</ListView.View>
-				</ListView>
-			</TabItem>
-		</TabControl>
+        <GridSplitter Grid.Row="2" Grid.ColumnSpan="3" Style="{StaticResource Separator}" />
+
+        <Grid Grid.Row="3" Grid.ColumnSpan="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Style="{StaticResource TableTitle}">Specimens</TextBlock>
+
+            <ListView Grid.Row="1"
+                      SelectionMode="Single"
+                      ItemsSource="{Binding CurrentProject.Specimens}"
+					  SelectedItem="{Binding SelectedSpecimen}"
+					  ext:GridViewSort.AutoSort="True">
+                <ListView.View>
+                    <GridView x:Name="SpecimensGridView">
+                        <GridView.Columns>
+                            <GridViewColumn Header="Name" Width="Auto" DisplayMemberBinding="{Binding Name}" ext:GridViewSort.PropertyName="Name" />
+                        </GridView.Columns>
+                    </GridView>
+                </ListView.View>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListViewItem}">
+                        <EventSetter Event="MouseDoubleClick" Handler="ListViewSpecimensItem_MouseDoubleClick" />
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Create" Command="{x:Static local:MainWindow.SpecimenCreateCommand}" />
+                        <MenuItem Header="Edit" Command="{x:Static local:MainWindow.SpecimenEditCommand}" InputGestureText="Double Click" />
+                        <MenuItem Header="Delete" Command="ApplicationCommands.Delete" />
+                    </ContextMenu>
+                </ListView.ContextMenu>
+            </ListView>
+        </Grid>
 	</Grid>
 </Window>

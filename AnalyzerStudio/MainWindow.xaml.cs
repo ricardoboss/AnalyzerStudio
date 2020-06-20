@@ -81,18 +81,6 @@ namespace AnalyzerStudio
 			}
 		}
 
-		private TabItem? selectedTab;
-		public TabItem? SelectedTab
-		{
-			get => selectedTab;
-			set
-			{
-				selectedTab = value;
-
-				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedTab)));
-			}
-		}
-
 		#endregion
 
 		public MainWindow(AnalysisProject project)
@@ -102,8 +90,6 @@ namespace AnalyzerStudio
 			DataContext = this;
 
 			Closing += MainWindow_Closing;
-
-			SelectedTab = (TabItem) TabControlMain.Items[0];
 
 			LoadProject(project);
 		}
@@ -367,53 +353,42 @@ namespace AnalyzerStudio
 		{
 			e.CanExecute = false;
 
-			if (SelectedTab == null)
-				return;
-
-			if (SelectedTab.Tag.Equals(typeof(Specimen)))
-			{
-				if (SelectedSpecimen == null)
+			var focussed = FocusManager.GetFocusedElement(this);
+			if (focussed is null ||
+				!(focussed is ListViewItem lvi) ||
+				lvi.DataContext == null)
 					return;
-			}
-			else if (SelectedTab.Tag.Equals(typeof(Property)))
-			{
-				if (SelectedProperty == null)
-					return;
-			}
 
-			e.CanExecute = true;
+			if (lvi.DataContext is Property || lvi.DataContext is Specimen)
+				e.CanExecute = true;
 		}
 
 		private void DeleteSelectedCommand_Executed(object sender, ExecutedRoutedEventArgs e)
 		{
-			if (SelectedTab == null)
-				return;
+			var focussed = FocusManager.GetFocusedElement(this);
+			var context = (focussed as ListViewItem)!.DataContext;
 
-			if (SelectedTab.Tag.Equals(typeof(Specimen)))
-			{
-				if (SelectedSpecimen == null)
-					return;
+			if (context is Specimen s)
+            {
+                var result = MessageBox.Show($"Are you sure you want to delete the specimen '{s.Name}'?", "Deleting Specimen", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (!result.Equals(MessageBoxResult.Yes))
+                    return;
 
-				var result = MessageBox.Show($"Are you sure you want to delete the specimen '{SelectedSpecimen.Name}'?", "Deleting Property", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-				if (!result.Equals(MessageBoxResult.Yes))
-					return;
+                CurrentProject.Specimens.Remove(s);
+            }
+            else if (context is Property p)
+            {
+                var result = MessageBox.Show($"Are you sure you want to delete the property '{p.Name}'? This will also remove it from every specimen.", "Deleting Property", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (!result.Equals(MessageBoxResult.Yes))
+                    return;
 
-				CurrentProject.Specimens.Remove(SelectedSpecimen);
-			}
-			else if (SelectedTab.Tag.Equals(typeof(Property)))
-			{
-				if (SelectedProperty == null)
-					return;
-
-				var result = MessageBox.Show($"Are you sure you want to delete the property '{SelectedProperty.Name}'? This will also remove it from every specimen.", "Deleting Property", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-				if (!result.Equals(MessageBoxResult.Yes))
-					return;
-
-				CurrentProject.Properties.Remove(SelectedProperty);
-			}
-		}
+                CurrentProject.Properties.Remove(p);
+            }
+        }
 
 		#endregion
+
+		#region File Extension Registration
 
 		private void MenuItemUninstallExtension_Click(object sender, RoutedEventArgs e)
 		{
@@ -467,5 +442,7 @@ namespace AnalyzerStudio
 
 			return process.ExitCode == 0;
 		}
+
+		#endregion
 	}
 }
