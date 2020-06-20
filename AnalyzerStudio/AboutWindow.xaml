@@ -14,7 +14,7 @@
                 <Setter Property="TextWrapping" Value="Wrap" />
             </Style>
         </StackPanel.Resources>
-        <TextBlock Text="{x:Static local:App.Name}" FontSize="20" />
+        <TextBlock Text="{x:Static local:App.Name}" Margin="0,5,0,0" FontSize="20" />
         <TextBlock Text="{x:Static local:App.VersionNumber}" Margin="0,5,0,0" />
 
         <TextBlock Margin="0,25,0,0">
@@ -23,7 +23,7 @@
             by <Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="https://ricardoboss.de">Ricardo Boss</Hyperlink>.
         </TextBlock>
 
-        <TextBlock Margin="0,10,0,0">
+        <TextBlock Margin="0,15,0,0">
             Hosted on <Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="https://github.com/ricardoboss/AnalyzerStudio">GitHub</Hyperlink>.
             Should you encounter any issues, report them on GitHub, please.
         </TextBlock>
