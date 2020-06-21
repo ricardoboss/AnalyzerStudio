@@ -38,3 +38,8 @@ The property weights and specimen properties are used to calculate the value in 
 A very important factor is the normalization strategy, which tells the program which value for a property is "better".
 
 After each value was scaled between 1 and 0, the values are summed up and divided by the sum of property weights. This gives a score between 1 and 0.
+
+## TODO
+
+- [ ] Copy/Paste
+- [ ] Ctrl+Z/Ctrl+Y
