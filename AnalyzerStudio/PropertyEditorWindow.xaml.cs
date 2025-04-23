@@ -15,9 +15,13 @@ namespace AnalyzerStudio;
 public partial class PropertyEditorWindow : INotifyPropertyChanged
 {
 	public event PropertyChangedEventHandler? PropertyChanged;
-	protected void SetProperty<T>(ref T property, T value, [CallerMemberName] string? propertyName = null, params string[] propertyNames)
+
+	private void SetProperty<T>(ref T currentValue, T newValue, [CallerMemberName] string? propertyName = null, params string[] propertyNames)
 	{
-		property = value;
+		if (currentValue != null && currentValue.Equals(newValue))
+			return;
+
+		currentValue = newValue;
 
 		var properties = new List<string?>(propertyNames) { propertyName };
 
@@ -43,7 +47,26 @@ public partial class PropertyEditorWindow : INotifyPropertyChanged
 	public int SelectedStrategyIndex
 	{
 		get => selectedStrategyIndex;
-		set => SetProperty(ref selectedStrategyIndex, value);
+		set => SetProperty(ref selectedStrategyIndex, value, nameof(SelectedStrategyIndex), nameof(NormalizationStrategyDescription));
+	}
+
+	public string NormalizationStrategyDescription
+	{
+		get
+		{
+			return (Enum.GetValues<NormalizationStrategy>().GetValue(SelectedStrategyIndex) as NormalizationStrategy?) switch
+			{
+				NormalizationStrategy.Max => "Maps values from (min,0) to (max,1) linearly",
+				NormalizationStrategy.Min => "Maps values from (min,1) to (max,0) linearly",
+				NormalizationStrategy.InverseMax => "DO NOT USE - Obsolete",
+				NormalizationStrategy.QuartMax => "Maps values from (min,0) to (max,1) quartically (bent towards 0)",
+				NormalizationStrategy.InverseQuartMax => "Maps values from (min,0) to (max,1) quartically (bent towards 1)",
+				NormalizationStrategy.QuartMin => "Maps values from (min,1) to (max,0) quartically (bent towards 0)",
+				NormalizationStrategy.InverseQuartMin => "Maps values from (min,1) to (max,0) quartically (bent towards 1)",
+				null => "Invalid selection",
+				_ => throw new ArgumentOutOfRangeException(),
+			};
+		}
 	}
 
 	public PropertyEditorWindow(Property property)
@@ -55,12 +78,12 @@ public partial class PropertyEditorWindow : INotifyPropertyChanged
 		this.property = property;
 
 		selectedTypeIndex = Array.IndexOf(
-			Enum.GetValues(typeof(PropertyType)),
+			Enum.GetValues<PropertyType>(),
 			property.Type
 		);
 
 		SelectedStrategyIndex = Array.IndexOf(
-			Enum.GetValues(typeof(NormalizationStrategy)),
+			Enum.GetValues<NormalizationStrategy>(),
 			property.NormalizationStrategy
 		);
 
@@ -83,11 +106,11 @@ public partial class PropertyEditorWindow : INotifyPropertyChanged
 
 	private void ComboBoxType_SelectionChanged(object sender, SelectionChangedEventArgs e)
 	{
-		Property.Type = (PropertyType)(Enum.GetValues(typeof(PropertyType)).GetValue(SelectedTypeIndex) ?? throw new NullReferenceException());
+		Property.Type = (PropertyType)(Enum.GetValues<PropertyType>().GetValue(SelectedTypeIndex) ?? throw new NullReferenceException());
 	}
 
 	private void ComboBoxNormalizationStrategy_SelectionChanged(object sender, SelectionChangedEventArgs e)
 	{
-		Property.NormalizationStrategy = (NormalizationStrategy)(Enum.GetValues(typeof(NormalizationStrategy)).GetValue(SelectedStrategyIndex) ?? throw new NullReferenceException());
+		Property.NormalizationStrategy = (NormalizationStrategy)(Enum.GetValues<NormalizationStrategy>().GetValue(SelectedStrategyIndex) ?? throw new NullReferenceException());
 	}
 }

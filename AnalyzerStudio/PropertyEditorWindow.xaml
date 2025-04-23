@@ -9,13 +9,13 @@
         d:DataContext="{d:DesignInstance local:PropertyEditorWindow}"
         WindowStyle="ToolWindow"
         WindowStartupLocation="CenterOwner"
-        Title="Property Editor" Height="250" Width="400">
+        Title="Property Editor" Height="300" Width="400">
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        
+
         <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <Grid>
                 <Grid.Resources>
@@ -51,6 +51,7 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Row="0" Grid.Column="0">Name</TextBlock>
@@ -67,7 +68,7 @@
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
-                
+
                 <TextBlock Grid.Row="3" Grid.Column="0">Normalization Strategy</TextBlock>
                 <ComboBox Grid.Row="3" Grid.Column="1" SelectionChanged="ComboBoxNormalizationStrategy_SelectionChanged" SelectedIndex="{Binding SelectedStrategyIndex}" ItemsSource="{Binding Source={StaticResource NormalizationStrategyDataProvider}}">
                     <ComboBox.ItemTemplate>
@@ -76,12 +77,14 @@
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
+
+                <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding NormalizationStrategyDescription}" TextWrapping="Wrap" />
             </Grid>
         </ScrollViewer>
 
         <StackPanel Grid.Row="1" Margin="0,5,0,0" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Margin="0,0,10,0" Click="ButtonAbort_Click" IsCancel="True">Cancel</Button>
-            <Button Click="ButtonSave_Click" IsDefault="True" x:Name="ButtonSave">Save</Button>
+            <Button Click="ButtonSave_Click" IsDefault="True">Save</Button>
         </StackPanel>
     </Grid>
 </Window>
