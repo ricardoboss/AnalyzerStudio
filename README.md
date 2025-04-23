@@ -39,6 +39,18 @@ A very important factor is the normalization strategy, which tells the program w
 
 After each value was scaled between 1 and 0, the values are summed up and divided by the sum of property weights. This gives a score between 1 and 0.
 
+The strategy used to normalize these values can be set when creating the property.
+The following strategies are available:
+
+![A graph showing the different normalization strategy functions](./normalization-strategies.png)
+
+- Max (red): Maps values from (min,0) to (max,1) linearly
+- Min (blue): Maps values from (min,1) to (max,0) linearly
+- QuartMax (green): Maps values from (min,0) to (max,1) quartically (bent towards 0)
+- InverseQuartMax (black): Maps values from (min,0) to (max,1) quartically (bent towards 1)
+- QuartMin (purple): Maps values from (min,1) to (max,0) quartically (bent towards 0)
+- InverseQuartMin (black): Maps values from (min,1) to (max,0) quartically (bent towards 1)
+
 ## TODO
 
 - [ ] Copy/Paste
