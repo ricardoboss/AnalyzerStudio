@@ -18,9 +18,7 @@
         <TextBlock Text="{x:Static local:App.VersionNumber}" Margin="0,5,0,0" />
 
         <TextBlock Margin="0,25,0,0">
-            Licensed under the
-            <Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="https://github.com/ricardoboss/AnalyzerStudio/blob/master/LICENSE">MIT license</Hyperlink>
-            by <Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="https://ricardoboss.de">Ricardo Boss</Hyperlink>.
+            Licensed under the <Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="https://github.com/ricardoboss/AnalyzerStudio/blob/master/LICENSE">MIT license</Hyperlink> by <Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="https://ricardoboss.de">Ricardo Boss</Hyperlink>.
         </TextBlock>
 
         <TextBlock Margin="0,15,0,0">

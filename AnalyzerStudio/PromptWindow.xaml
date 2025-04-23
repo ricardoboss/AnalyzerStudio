@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:AnalyzerStudio"
         mc:Ignorable="d"
         WindowStyle="ToolWindow"
         WindowStartupLocation="CenterOwner"
@@ -14,8 +13,9 @@
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        
-        <TextBlock Grid.Row="0" Margin="0,5,0,10" Text="{Binding Description}" Visibility="{Binding DescriptionVisibility}" />
+
+        <TextBlock Grid.Row="0" Margin="0,5,0,10" Text="{Binding Description}"
+                   Visibility="{Binding DescriptionVisibility}" />
 
         <ScrollViewer Grid.Row="1" Margin="0,10,0,10" VerticalScrollBarVisibility="Auto">
             <Grid x:Name="GridInputs">
@@ -28,8 +28,6 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                </Grid.RowDefinitions>
             </Grid>
         </ScrollViewer>
 

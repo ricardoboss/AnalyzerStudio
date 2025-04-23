@@ -6,101 +6,100 @@ using System.ComponentModel;
 using System.Dynamic;
 using System.Linq;
 
-namespace AnalyzerStudio.Models
+namespace AnalyzerStudio.Models;
+
+public class Specimen : DynamicObject, INotifyPropertyChanged, ICloneable
 {
-	public class Specimen : DynamicObject, INotifyPropertyChanged, ICloneable
+	[JsonProperty]
+	public string? Name
 	{
-		[JsonProperty]
-		public string? Name
+		get => name;
+		set
 		{
-			get => name;
-			set
-			{
-				name = value;
+			name = value;
 
-				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name)));
-			}
+			PropertyChanged?.Invoke(this, new(nameof(Name)));
 		}
-		private string? name;
+	}
+	private string? name;
 
-		[JsonProperty]
-		public readonly Dictionary<string, object?> Properties = new Dictionary<string, object?>();
+	[JsonProperty]
+	public readonly Dictionary<string, object?> Properties = new();
 
-		public event PropertyChangedEventHandler? PropertyChanged;
+	public event PropertyChangedEventHandler? PropertyChanged;
 
-		public Specimen()
+	public Specimen()
+	{
+	}
+
+	public Specimen(IEnumerable<Property> properties)
+	{
+		foreach (var p in properties)
+			if (p.DefaultValue != null)
+				Properties[p.Name] = p.DefaultValue;
+	}
+
+	private Specimen(string? name, Dictionary<string, object?> properties)
+	{
+		Name = name;
+
+		CopyValues(properties, false);
+	}
+
+	public override bool TryGetMember(GetMemberBinder binder, out object? result)
+	{
+		result = Properties.FirstOrDefault(p => p.Key.Equals(binder.Name)).Value;
+
+		return true;
+	}
+
+	public override bool TrySetMember(SetMemberBinder binder, object? value)
+	{
+		//var property = MainWindow.CurrentProject.Properties.First(p => p.Name.Equals(binder.Name));
+		//if (property == null)
+		//    return false;
+
+		//if (!property.Type.IsInstanceOfType(value))
+		//    return false;
+
+		if (value == null)
+			Properties.Remove(binder.Name);
+		else
+			Properties[binder.Name] = value;
+
+		PropertyChanged?.Invoke(this, new(binder.Name));
+
+		return true;
+	}
+
+	object ICloneable.Clone()
+	{
+		return Clone();
+	}
+
+	public Specimen Clone()
+	{
+		return new(Name, Properties);
+	}
+
+	public void CopyValues(Specimen from, bool notifyChanges = true)
+	{
+		Name = from.Name;
+
+		CopyValues(from.Properties, notifyChanges);
+	}
+
+	private void CopyValues(Dictionary<string, object?> properties, bool notifyChanges)
+	{
+		foreach (var pair in properties)
 		{
-		}
-
-		public Specimen(IEnumerable<Property> properties)
-		{
-			foreach (var p in properties)
-				if (p.DefaultValue != null)
-					Properties[p.Name] = p.DefaultValue;
-		}
-
-		private Specimen(string? name, Dictionary<string, object?> properties)
-		{
-			Name = name;
-
-			CopyValues(properties, false);
-		}
-
-		public override bool TryGetMember(GetMemberBinder binder, out object? result)
-		{
-			result = Properties.FirstOrDefault(p => p.Key.Equals(binder.Name)).Value;
-
-			return true;
-		}
-
-		public override bool TrySetMember(SetMemberBinder binder, object? value)
-		{
-			//var property = MainWindow.CurrentProject.Properties.First(p => p.Name.Equals(binder.Name));
-			//if (property == null)
-			//    return false;
-
-			//if (!property.Type.IsInstanceOfType(value))
-			//    return false;
-
-			if (value == null)
-				Properties.Remove(binder.Name);
+			if (pair.Value is ICloneable cloneable)
+				Properties[pair.Key] = cloneable.Clone();
 			else
-				Properties[binder.Name] = value;
+				Properties[pair.Key] = pair.Value;
 
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(binder.Name));
-
-			return true;
-		}
-
-		object ICloneable.Clone()
-		{
-			return Clone();
-		}
-
-		public Specimen Clone()
-		{
-			return new Specimen(Name, Properties);
-		}
-
-		public void CopyValues(Specimen from, bool notifyChanges = true)
-		{
-			Name = from.Name;
-
-			CopyValues(from.Properties, notifyChanges);
-		}
-
-		private void CopyValues(Dictionary<string, object?> properties, bool notifyChanges)
-		{
-			foreach (var pair in properties)
-			{
-				if (pair.Value is ICloneable cloneable)
-					Properties[pair.Key] = cloneable.Clone();
-				else
-					Properties[pair.Key] = pair.Value;
-
-				if (notifyChanges)
-					PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(pair.Key));
-			}
+			if (notifyChanges)
+				PropertyChanged?.Invoke(this, new(pair.Key));
 		}
 	}
 }

@@ -3,9 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:models="clr-namespace:AnalyzerStudio.Models"
+        xmlns:analyzerStudio="clr-namespace:AnalyzerStudio"
         mc:Ignorable="d"
-        d:DataContext="{d:DesignInstance models:Specimen}"
+        d:DataContext="{d:DesignInstance analyzerStudio:SpecimenEditorWindow}"
         WindowStyle="ToolWindow"
         WindowStartupLocation="CenterOwner"
         Title="Specimen Editor" Height="450" Width="400">
@@ -14,7 +14,7 @@
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        
+
         <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <Grid x:Name="GridProperties" Margin="0,5,0,0">
                 <Grid.Resources>
@@ -36,8 +36,13 @@
                                     <Grid>
                                         <Border BorderBrush="Red" BorderThickness="1" x:Name="errorBorder" />
                                         <AdornedElementPlaceholder x:Name="placeholder" />
-                                        <Popup AllowsTransparency="True" HorizontalAlignment="Left" HorizontalOffset="0" VerticalOffset="0" PopupAnimation="Fade" Placement="Bottom" PlacementTarget="{Binding ElementName=errorBorder}" IsOpen="{Binding ElementName=placeholder, Path=AdornedElement.IsFocused, Mode=OneWay}">
-                                            <TextBlock HorizontalAlignment="Center" Background="Red" Foreground="White" FontWeight="Bold" Padding="2" Text="{Binding ElementName=placeholder, Path=AdornedElement.Tag, Mode=OneWay}" />
+                                        <Popup AllowsTransparency="True" HorizontalAlignment="Left"
+                                               HorizontalOffset="0" VerticalOffset="0" PopupAnimation="Fade"
+                                               Placement="Bottom" PlacementTarget="{Binding ElementName=errorBorder}"
+                                               IsOpen="{Binding ElementName=placeholder, Path=AdornedElement.IsFocused, Mode=OneWay}">
+                                            <TextBlock HorizontalAlignment="Center" Background="Red" Foreground="White"
+                                                       FontWeight="Bold" Padding="2"
+                                                       Text="{Binding ElementName=placeholder, Path=AdornedElement.Tag, Mode=OneWay}" />
                                         </Popup>
                                     </Grid>
                                 </ControlTemplate>
@@ -45,12 +50,13 @@
                         </Setter>
                         <Style.Triggers>
                             <Trigger Property="Validation.HasError" Value="True">
-                                <Setter Property="Tag" Value="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=(Validation.Errors)[0].ErrorContent}" />
+                                <Setter Property="Tag"
+                                        Value="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=(Validation.Errors)[0].ErrorContent}" />
                             </Trigger>
                         </Style.Triggers>
                     </Style>
                 </Grid.Resources>
-                
+
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
@@ -64,10 +70,15 @@
                 <TextBlock Grid.Row="0" Grid.Column="0" FontStyle="Italic">Property</TextBlock>
                 <TextBlock Grid.Row="0" Grid.Column="1" FontStyle="Italic">Value</TextBlock>
 
-                <Rectangle Grid.Row="1" Grid.ColumnSpan="2" Fill="{StaticResource AppDarkWhite}" Height="1" Margin="3" />
+                <Rectangle Grid.Column="0"
+                           Grid.Row="1"
+                           Grid.ColumnSpan="2"
+
+                           Fill="{StaticResource AppDarkWhite}" Height="1" Margin="3" />
 
                 <TextBlock Grid.Row="2" Grid.Column="0">Name</TextBlock>
-                <TextBox Grid.Row="2" Grid.Column="1" x:Name="TextBoxName" Text="{Binding Name}" TextChanged="Input_TextChanged" LostFocus="Input_LostFocus" />
+                <TextBox Grid.Row="2" Grid.Column="1" x:Name="TextBoxName" Text="{Binding Name}"
+                         TextChanged="Input_TextChanged" LostFocus="Input_LostFocus" />
             </Grid>
         </ScrollViewer>
 
