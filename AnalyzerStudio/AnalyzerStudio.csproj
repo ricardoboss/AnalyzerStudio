@@ -2,10 +2,10 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
 
-    <PublishTrimmed>true</PublishTrimmed>
+<!--    <PublishTrimmed>true</PublishTrimmed>-->
     <PublishReadyToRun>true</PublishReadyToRun>
     <PublishSingleFile>true</PublishSingleFile>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
@@ -15,6 +15,7 @@
     <AssemblyName>Analyzer Studio</AssemblyName>
     <RootNamespace>AnalyzerStudio</RootNamespace>
     <AssemblyVersion>1.2.0.0</AssemblyVersion>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
