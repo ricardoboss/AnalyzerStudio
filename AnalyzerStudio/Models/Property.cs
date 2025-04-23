@@ -5,207 +5,216 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-namespace AnalyzerStudio.Models
+namespace AnalyzerStudio.Models;
+
+public enum NormalizationStrategy
 {
-	public enum NormalizationStrategy
+	Max,
+	Min,
+	[Obsolete("Should be converted to NormalizationStrategy.Min")]
+	InverseMax,
+	QuartMax,
+	InverseQuartMax,
+	QuartMin,
+	InverseQuartMin,
+}
+
+public enum PropertyType
+{
+	Text,
+	Double,
+	Boolean,
+}
+
+public class PropertyNameChangedEventArgs : EventArgs
+{
+	public string? NewName { get; }
+	public string? OldName { get; }
+
+	public bool Canceled { get; set; }
+
+	public PropertyNameChangedEventArgs(string? newName, string? oldName)
 	{
-		Max,
-		Min,
-		InverseMax
+		NewName = newName;
+		OldName = oldName;
 	}
+}
 
-	public enum PropertyType
+public class PropertyTypeChangedEventArgs : EventArgs
+{
+	public PropertyType NewType { get; }
+	public PropertyType OldType { get; }
+
+	public bool Canceled { get; set; }
+
+	public PropertyTypeChangedEventArgs(PropertyType newType, PropertyType oldType)
 	{
-		Text,
-		Double,
-		Boolean
+		NewType = newType;
+		OldType = oldType;
 	}
+}
 
-	public class PropertyNameChangedEventArgs : EventArgs
+public class Property : BaseModel, ICloneable
+{
+	public static bool TryConvert(PropertyType fromType, PropertyType toType, object? value, out object? convertedValue)
 	{
-		public string? NewName { get; }
-		public string? OldName { get; }
-
-		public bool Canceled { get; set; }
-
-		public PropertyNameChangedEventArgs(string? newName, string? oldName)
+		if (fromType.Equals(toType))
 		{
-			NewName = newName;
-			OldName = oldName;
+			convertedValue = value;
+
+			return true;
 		}
-	}
 
-	public class PropertyTypeChangedEventArgs : EventArgs
-	{
-		public PropertyType NewType { get; }
-		public PropertyType OldType { get; }
-
-		public bool Canceled { get; set; }
-
-		public PropertyTypeChangedEventArgs(PropertyType newType, PropertyType oldType)
+		switch (toType)
 		{
-			NewType = newType;
-			OldType = oldType;
-		}
-	}
-
-	public class Property : BaseModel, ICloneable
-	{
-		public static bool TryConvert(PropertyType fromType, PropertyType toType, object? value, out object? convertedValue)
-		{
-			if (fromType.Equals(toType))
-			{
-				convertedValue = value;
+			case PropertyType.Text:
+				convertedValue = Convert.ToString(value, CultureInfo.CurrentCulture);
 
 				return true;
-			}
+			case PropertyType.Double:
+				convertedValue = Convert.ToDouble(value, CultureInfo.CurrentCulture);
 
-			switch (toType)
-			{
-				case PropertyType.Text:
-					convertedValue = Convert.ToString(value, CultureInfo.CurrentCulture);
+				return true;
+			case PropertyType.Boolean:
+				convertedValue = Convert.ToBoolean(value, CultureInfo.CurrentCulture);
 
-					return true;
-				case PropertyType.Double:
-					convertedValue = Convert.ToDouble(value, CultureInfo.CurrentCulture);
-
-					return true;
-				case PropertyType.Boolean:
-					convertedValue = Convert.ToBoolean(value, CultureInfo.CurrentCulture);
-
-					return true;
-				default:
-					throw new NotImplementedException();
-			}
+				return true;
+			default:
+				throw new NotImplementedException();
 		}
+	}
 
-		public event EventHandler<PropertyNameChangedEventArgs>? NameChanged;
-		public event EventHandler<PropertyTypeChangedEventArgs>? TypeChanged;
+	public event EventHandler<PropertyNameChangedEventArgs>? NameChanged;
+	public event EventHandler<PropertyTypeChangedEventArgs>? TypeChanged;
 
-		[JsonProperty]
-		public string Name
+	[JsonProperty]
+	public string Name
+	{
+		get => name ?? "";
+		set
 		{
-			get => name ?? "";
-			set
-			{
-				if (name == value)
-					return;
+			if (name == value)
+				return;
 
-				var args = new PropertyNameChangedEventArgs(value, name);
-				NameChanged?.Invoke(this, args);
+			var args = new PropertyNameChangedEventArgs(value, name);
+			NameChanged?.Invoke(this, args);
 
-				if (args.Canceled)
-					return;
+			if (args.Canceled)
+				return;
 
-				SetProperty(ref name, value);
-			}
+			SetProperty(ref name, value);
 		}
+	}
 
-		private string? name;
+	private string? name;
 
-		[JsonProperty]
-		public int Weight
+	[JsonProperty]
+	public int Weight
+	{
+		get => weight;
+		set => SetProperty(ref weight, value);
+	}
+
+	private int weight;
+
+	[JsonProperty]
+	[JsonConverter(typeof(StringEnumConverter))]
+	public PropertyType Type
+	{
+		get => type;
+		set
 		{
-			get => weight;
-			set => SetProperty(ref weight, value);
+			if (type.Equals(value))
+				return;
+
+			var args = new PropertyTypeChangedEventArgs(value, type);
+			TypeChanged?.Invoke(this, args);
+
+			if (args.Canceled)
+				return;
+
+			SetProperty(ref type, value);
 		}
+	}
 
-		private int weight;
+	private PropertyType type = PropertyType.Text;
 
-		[JsonProperty]
-		[JsonConverter(typeof(StringEnumConverter))]
-		public PropertyType Type
+	[JsonProperty]
+	[JsonConverter(typeof(StringEnumConverter))]
+	public NormalizationStrategy NormalizationStrategy
+	{
+		get => normalizationStrategy;
+		set => SetProperty(ref normalizationStrategy, value);
+	}
+
+	private NormalizationStrategy normalizationStrategy = NormalizationStrategy.Max;
+
+	[JsonIgnore]
+	public object? DefaultValue => Type switch
+	{
+		PropertyType.Boolean => false,
+		PropertyType.Double => 0d,
+		PropertyType.Text => "",
+		_ => null,
+	};
+
+	public override string ToString() => Name;
+
+	public double Normalize(double value, IReadOnlyCollection<double> allValues)
+	{
+		var max = allValues.Max();
+		var min = allValues.Min();
+		var difference = max - min;
+
+		if (difference == 0)
+			return 0;
+
+		// see https://www.desmos.com/calculator/0ljydkouea
+		return NormalizationStrategy switch
 		{
-			get => type;
-			set
-			{
-				if (type.Equals(value))
-					return;
+			// the red line - maps linearly from (min,0) over (50th percentile,0.5) to (max,1)
+			NormalizationStrategy.Max => (value - min) / difference,
 
-				var args = new PropertyTypeChangedEventArgs(value, type);
-				TypeChanged?.Invoke(this, args);
+			// the blue line - maps linearly from (min,1) over (50th percentile,0.5) to (max,0)
+			NormalizationStrategy.Min => (max - value) / difference,
 
-				if (args.Canceled)
-					return;
+			// the green line - maps quartically from (min,0) over (50th percentile,1/16) to (max,1)
+			NormalizationStrategy.QuartMax => 1 / Math.Pow(difference, 4) * Math.Pow(value - min, 4),
 
-				SetProperty(ref type, value);
-			}
-		}
+			// the black line - maps quartically from (min,0) over (50th percentile,1 - 1/16) to (max,1)
+			NormalizationStrategy.InverseQuartMax => 1 - 1 / Math.Pow(difference, 4) * Math.Pow(value - max, 4),
 
-		private PropertyType type = PropertyType.Text;
+			// the purple line - maps quartically from (min,1) over (50th percentile,1/16) to (max,0)
+			NormalizationStrategy.QuartMin => 1 / Math.Pow(difference, 4) * Math.Pow(value - max, 4),
 
-		[JsonProperty]
-		[JsonConverter(typeof(StringEnumConverter))]
-		public NormalizationStrategy NormalizationStrategy
-		{
-			get => normalizationStrategy;
-			set => SetProperty(ref normalizationStrategy, value);
-		}
+			// the orange line - maps quartically from (min,1) over (50th percentile,1-1/16) to (max,0)
+			NormalizationStrategy.InverseQuartMin => 1 - 1 / Math.Pow(difference, 4) * Math.Pow(value - min, 4),
 
-		private NormalizationStrategy normalizationStrategy = NormalizationStrategy.Max;
-
-		[JsonIgnore]
-		public object? DefaultValue => Type switch
-		{
-			PropertyType.Boolean => false,
-			PropertyType.Double => 0d,
-			PropertyType.Text => "",
-			_ => null
+			_ => throw new ArgumentOutOfRangeException(),
 		};
+	}
 
-		public override string ToString() => Name;
+	object ICloneable.Clone()
+	{
+		return Clone();
+	}
 
-		public void Normalize(ref double value, IEnumerable<double> allValues)
+	public Property Clone()
+	{
+		return new()
 		{
-			switch (NormalizationStrategy)
-			{
-				case NormalizationStrategy.Max:
-					var max = allValues.Max();
-					if (max == 0)
-						break;
+			Name = Name,
+			Weight = Weight,
+			Type = Type,
+			NormalizationStrategy = NormalizationStrategy
+		};
+	}
 
-					value /= max;
-					break;
-				case NormalizationStrategy.Min:
-					var min = allValues.Min();
-					if (value == 0)
-						break;
-
-					value = min / value;
-					break;
-				case NormalizationStrategy.InverseMax:
-					var max2 = allValues.Max();
-					if (max2 == 0)
-						break;
-
-					value /= max2;
-					value = 1 - value;
-					break;
-			}
-		}
-
-		object ICloneable.Clone()
-		{
-			return Clone();
-		}
-
-		public Property Clone()
-		{
-			return new Property
-			{
-				Name = Name,
-				Weight = Weight,
-				Type = Type,
-				NormalizationStrategy = NormalizationStrategy
-			};
-		}
-
-		public void CopyValues(Property property)
-		{
-			Name = property.Name;
-			Weight = property.Weight;
-			Type = property.Type;
-			NormalizationStrategy = property.NormalizationStrategy;
-		}
+	public void CopyValues(Property property)
+	{
+		Name = property.Name;
+		Weight = property.Weight;
+		Type = property.Type;
+		NormalizationStrategy = property.NormalizationStrategy;
 	}
 }
