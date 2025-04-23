@@ -11,11 +11,11 @@ using Microsoft.Win32;
 
 namespace AnalyzerStudio
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
-    public partial class App : Application
-    {
+	/// <summary>
+	/// Interaction logic for App.xaml
+	/// </summary>
+	public partial class App : Application
+	{
 		public static string VersionNumber => Assembly.GetEntryAssembly()?.GetName().Version?.ToString(2) ?? "?";
 		public static string Version => "v" + Assembly.GetEntryAssembly()?.GetName().Version?.ToString(2) ?? "unknown";
 		public static string Name => Assembly.GetEntryAssembly()?.GetName().Name ?? "unknown";
@@ -25,19 +25,19 @@ namespace AnalyzerStudio
 
 		public static new App Current => (App)Application.Current;
 
-        private MainWindow? ProjectWindow;
-        internal ProjectLoadWindow? ProjectLoadWindow { get; private set; }
+		private MainWindow? ProjectWindow;
+		internal ProjectLoadWindow? ProjectLoadWindow { get; private set; }
 
-        private void Application_Startup(object sender, StartupEventArgs e)
-        {
+		private void Application_Startup(object sender, StartupEventArgs e)
+		{
 			RegistryManager.Init();
 
 			ProjectLoadWindow = new ProjectLoadWindow();
 			ProjectLoadWindow.Closed += (o, e) => Shutdown();
 
-            if (e.Args.Length > 0)
-            {
-                var firstArg = e.Args[0];
+			if (e.Args.Length > 0)
+			{
+				var firstArg = e.Args[0];
 				switch (firstArg)
 				{
 					case "--install-extension":
@@ -56,10 +56,10 @@ namespace AnalyzerStudio
 
 						break;
 				}
-            }
+			}
 
-            MainWindow = ProjectLoadWindow;
-            MainWindow.Show();
+			MainWindow = ProjectLoadWindow;
+			MainWindow.Show();
 		}
 
 		private void Application_Exit(object sender, ExitEventArgs e)
@@ -83,59 +83,59 @@ namespace AnalyzerStudio
 		}
 
 		public bool Open(AnalysisProject project)
-        {
-            if (!TryCloseProjectWindow())
-                return false;
+		{
+			if (!TryCloseProjectWindow())
+				return false;
 
-            ProjectWindow = new MainWindow(project);
-            ProjectWindow.Closed += (o, e) =>
-            {
-                if (MainWindow != null)
-                    return;
+			ProjectWindow = new MainWindow(project);
+			ProjectWindow.Closed += (o, e) =>
+			{
+				if (MainWindow != null)
+					return;
 
-                ProjectLoadWindow?.Close();
-            };
+				ProjectLoadWindow?.Close();
+			};
 
-            MainWindow = ProjectWindow;
+			MainWindow = ProjectWindow;
 
-            if (ProjectLoadWindow?.IsVisible ?? false)
-                ProjectLoadWindow.Hide();
+			if (ProjectLoadWindow?.IsVisible ?? false)
+				ProjectLoadWindow.Hide();
 
-            MainWindow.Show();
+			MainWindow.Show();
 
-            return true;
-        }
+			return true;
+		}
 
-        public bool TryCloseCurrent()
-        {
-            MainWindow = ProjectLoadWindow;
+		public bool TryCloseCurrent()
+		{
+			MainWindow = ProjectLoadWindow;
 
-            if (!TryCloseProjectWindow())
-                return false;
+			if (!TryCloseProjectWindow())
+				return false;
 
-            ProjectLoadWindow?.Show();
+			ProjectLoadWindow?.Show();
 
-            return true;
-        }
+			return true;
+		}
 
-        public bool TryCloseProjectWindow()
-        {
-            if (ProjectWindow == null)
-                return true;
+		public bool TryCloseProjectWindow()
+		{
+			if (ProjectWindow == null)
+				return true;
 
-            var isClosed = false;
-            void closedListener(object? o, EventArgs e) => isClosed = true;
+			var isClosed = false;
+			void closedListener(object? o, EventArgs e) => isClosed = true;
 
-            ProjectWindow.Closed += closedListener;
-            ProjectWindow.Close();
-            ProjectWindow.Closed -= closedListener;
+			ProjectWindow.Closed += closedListener;
+			ProjectWindow.Close();
+			ProjectWindow.Closed -= closedListener;
 
-            if (!isClosed)
-                return false;
+			if (!isClosed)
+				return false;
 
-            ProjectWindow = null;
+			ProjectWindow = null;
 
-            return true;
-        }
+			return true;
+		}
 	}
 }

@@ -357,7 +357,7 @@ namespace AnalyzerStudio
 			if (focussed is null ||
 				!(focussed is ListViewItem lvi) ||
 				lvi.DataContext == null)
-					return;
+				return;
 
 			if (lvi.DataContext is Property || lvi.DataContext is Specimen)
 				e.CanExecute = true;
@@ -369,22 +369,22 @@ namespace AnalyzerStudio
 			var context = (focussed as ListViewItem)!.DataContext;
 
 			if (context is Specimen s)
-            {
-                var result = MessageBox.Show($"Are you sure you want to delete the specimen '{s.Name}'?", "Deleting Specimen", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                if (!result.Equals(MessageBoxResult.Yes))
-                    return;
+			{
+				var result = MessageBox.Show($"Are you sure you want to delete the specimen '{s.Name}'?", "Deleting Specimen", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+				if (!result.Equals(MessageBoxResult.Yes))
+					return;
 
-                CurrentProject.Specimens.Remove(s);
-            }
-            else if (context is Property p)
-            {
-                var result = MessageBox.Show($"Are you sure you want to delete the property '{p.Name}'? This will also remove it from every specimen.", "Deleting Property", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                if (!result.Equals(MessageBoxResult.Yes))
-                    return;
+				CurrentProject.Specimens.Remove(s);
+			}
+			else if (context is Property p)
+			{
+				var result = MessageBox.Show($"Are you sure you want to delete the property '{p.Name}'? This will also remove it from every specimen.", "Deleting Property", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+				if (!result.Equals(MessageBoxResult.Yes))
+					return;
 
-                CurrentProject.Properties.Remove(p);
-            }
-        }
+				CurrentProject.Properties.Remove(p);
+			}
+		}
 
 		#endregion
 

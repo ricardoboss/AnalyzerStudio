@@ -1,6 +1,5 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -8,19 +7,19 @@ using System.Linq;
 
 namespace AnalyzerStudio.Models
 {
-    public enum NormalizationStrategy
-    {
-        Max,
-        Min,
+	public enum NormalizationStrategy
+	{
+		Max,
+		Min,
 		InverseMax
-    }
+	}
 
-    public enum PropertyType
-    {
-        Text,
-        Double,
-        Boolean
-    }
+	public enum PropertyType
+	{
+		Text,
+		Double,
+		Boolean
+	}
 
 	public class PropertyNameChangedEventArgs : EventArgs
 	{
@@ -50,8 +49,8 @@ namespace AnalyzerStudio.Models
 		}
 	}
 
-    public class Property : BaseModel, ICloneable
-    {
+	public class Property : BaseModel, ICloneable
+	{
 		public static bool TryConvert(PropertyType fromType, PropertyType toType, object? value, out object? convertedValue)
 		{
 			if (fromType.Equals(toType))
@@ -86,7 +85,8 @@ namespace AnalyzerStudio.Models
 		[JsonProperty]
 		public string Name
 		{
-			get => name ?? ""; set
+			get => name ?? "";
+			set
 			{
 				if (name == value)
 					return;
@@ -100,13 +100,19 @@ namespace AnalyzerStudio.Models
 				SetProperty(ref name, value);
 			}
 		}
-        private string? name;
 
-        [JsonProperty]
-        public int Weight { get => weight; set => SetProperty(ref weight, value); }
-        private int weight;
+		private string? name;
 
-        [JsonProperty]
+		[JsonProperty]
+		public int Weight
+		{
+			get => weight;
+			set => SetProperty(ref weight, value);
+		}
+
+		private int weight;
+
+		[JsonProperty]
 		[JsonConverter(typeof(StringEnumConverter))]
 		public PropertyType Type
 		{
@@ -125,42 +131,48 @@ namespace AnalyzerStudio.Models
 				SetProperty(ref type, value);
 			}
 		}
-        private PropertyType type = PropertyType.Text;
 
-        [JsonProperty]
-        [JsonConverter(typeof(StringEnumConverter))]
-        public NormalizationStrategy NormalizationStrategy { get => normalizationStrategy; set => SetProperty(ref normalizationStrategy, value); }
-        private NormalizationStrategy normalizationStrategy = NormalizationStrategy.Max;
+		private PropertyType type = PropertyType.Text;
 
-        [JsonIgnore]
-        public object? DefaultValue => Type switch
-        {
-            PropertyType.Boolean => false,
-            PropertyType.Double => 0d,
-            PropertyType.Text => "",
-            _ => null
-        };
+		[JsonProperty]
+		[JsonConverter(typeof(StringEnumConverter))]
+		public NormalizationStrategy NormalizationStrategy
+		{
+			get => normalizationStrategy;
+			set => SetProperty(ref normalizationStrategy, value);
+		}
+
+		private NormalizationStrategy normalizationStrategy = NormalizationStrategy.Max;
+
+		[JsonIgnore]
+		public object? DefaultValue => Type switch
+		{
+			PropertyType.Boolean => false,
+			PropertyType.Double => 0d,
+			PropertyType.Text => "",
+			_ => null
+		};
 
 		public override string ToString() => Name;
 
 		public void Normalize(ref double value, IEnumerable<double> allValues)
-        {
-            switch (NormalizationStrategy)
-            {
-                case NormalizationStrategy.Max:
-                    var max = allValues.Max();
-                    if (max == 0)
-                        break;
+		{
+			switch (NormalizationStrategy)
+			{
+				case NormalizationStrategy.Max:
+					var max = allValues.Max();
+					if (max == 0)
+						break;
 
-                    value /= max;
-                    break;
-                case NormalizationStrategy.Min:
-                    var min = allValues.Min();
-                    if (value == 0)
-                        break;
+					value /= max;
+					break;
+				case NormalizationStrategy.Min:
+					var min = allValues.Min();
+					if (value == 0)
+						break;
 
-                    value = min / value;
-                    break;
+					value = min / value;
+					break;
 				case NormalizationStrategy.InverseMax:
 					var max2 = allValues.Max();
 					if (max2 == 0)
@@ -169,31 +181,31 @@ namespace AnalyzerStudio.Models
 					value /= max2;
 					value = 1 - value;
 					break;
-            }
-        }
+			}
+		}
 
-        object ICloneable.Clone()
-        {
-            return Clone();
-        }
+		object ICloneable.Clone()
+		{
+			return Clone();
+		}
 
-        public Property Clone()
-        {
-            return new Property
-            {
-                Name = Name,
-                Weight = Weight,
-                Type = Type,
-                NormalizationStrategy = NormalizationStrategy
-            };
-        }
+		public Property Clone()
+		{
+			return new Property
+			{
+				Name = Name,
+				Weight = Weight,
+				Type = Type,
+				NormalizationStrategy = NormalizationStrategy
+			};
+		}
 
-        public void CopyValues(Property property)
-        {
-            Name = property.Name;
-            Weight = property.Weight;
-            Type = property.Type;
-            NormalizationStrategy = property.NormalizationStrategy;
-        }
-    }
+		public void CopyValues(Property property)
+		{
+			Name = property.Name;
+			Weight = property.Weight;
+			Type = property.Type;
+			NormalizationStrategy = property.NormalizationStrategy;
+		}
+	}
 }
